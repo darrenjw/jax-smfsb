@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "jax-smfsb"
+name = "jsmfsb"
 version = "0.0.1"
 authors = [
   { name="Darren Wilkinson", email="darrenjwilkinson@btinternet.com" },
@@ -23,8 +23,11 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["src/jsmfsb"]
+
 [project.urls]
 Homepage = "https://github.com/darrenjw/jax-smfsb"
-Documentation = "https://jax-smfsb.readthedocs.io/"
+Documentation = "https://jsmfsb.readthedocs.io/"
 Issues = "https://github.com/darrenjw/jax-smfsb/issues"
 

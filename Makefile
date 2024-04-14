@@ -11,7 +11,7 @@ build:
 
 install:
 	make build
-	python3 -m pip install ./dist/jax-smfsb-$(VERSION).tar.gz
+	python3 -m pip install ./dist/jsmfsb-$(VERSION).tar.gz
 
 test:
 	pytest tests/
@@ -22,7 +22,7 @@ publish:
 
 
 edit:
-	emacs Makefile *.toml *.md src/jax-smfsb/*.py tests/*.py &
+	emacs Makefile *.toml *.md src/jsmfsb/*.py tests/*.py &
 
 
 # eof
