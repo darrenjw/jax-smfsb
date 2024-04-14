@@ -1,0 +1,30 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "jax-smfsb"
+version = "0.0.1"
+authors = [
+  { name="Darren Wilkinson", email="darrenjwilkinson@btinternet.com" },
+]
+description = "Python+JAX code relating to the textbook, Stochastic modelling for systems biology, third edition"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+  "sbmlsh",
+  "numpy<2",
+  "scipy",
+  "jaxlib"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/darrenjw/jax-smfsb"
+Documentation = "https://jax-smfsb.readthedocs.io/"
+Issues = "https://github.com/darrenjw/jax-smfsb/issues"
+
