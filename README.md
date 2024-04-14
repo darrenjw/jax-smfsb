@@ -1,4 +1,4 @@
-# jax-smfsb
+# JAX-SMfSB
 
 SMfSB code in Python+JAX
 
@@ -13,4 +13,10 @@ Import:
 ```python
 import jsfmsb
 ```
+
+
+
+
+Copyright (C) 2024 Darren J Wilkinson
+
 
