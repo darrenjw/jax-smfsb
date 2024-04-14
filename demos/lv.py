@@ -8,15 +8,9 @@ import jax.scipy as jsp
 import jax.lax as jl
 from jax import grad, jit
 
-from spn import Spn
+import jsmfsb
 
-from models import *
-from sim import *
-
-
-
-
-lvmod = lv()
+lvmod = jsmfsb.models.lv()
 step = lvmod.stepGillespie()
 k0 = jax.random.key(42)
 print(step(k0, lvmod.m, 0, 30))
@@ -26,7 +20,7 @@ print(stepC(k0, lvmod.m, 0, 30))
 
 
 # simTs
-out = simTs(k0, lvmod.m, 0, 30, 0.1, step)
+out = jsmfsb.simTs(k0, lvmod.m, 0, 30, 0.1, step)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
@@ -37,7 +31,7 @@ axis.legend(lvmod.n)
 fig.savefig("lv.pdf")
 
 # simSample
-out = simSample(k0, 10000, lvmod.m, 0, 30, stepC)
+out = jsmfsb.simSample(k0, 10000, lvmod.m, 0, 30, stepC)
 out = jnp.where(out > 1000, 1000, out)
 import scipy as sp
 print(sp.stats.describe(out))

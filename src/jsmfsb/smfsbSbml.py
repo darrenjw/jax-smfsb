@@ -4,7 +4,7 @@
 
 import libsbml
 import sys
-from spn import Spn
+from jsmfsb import Spn
 import numpy as np
 from sbmlsh import mod2sbml
 

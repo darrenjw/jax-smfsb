@@ -1,8 +1,8 @@
-from smfsb.spn import *
-from smfsb.sim import *
-from smfsb.smfsbSbml import *
+from jsmfsb.spn import *
+from jsmfsb.sim import *
+from jsmfsb.smfsbSbml import *
 
-import smfsb.models
+import jsmfsb.models
 
 
 

@@ -2,7 +2,7 @@
 
 import jax.numpy as jnp
 
-from spn import Spn
+from jsmfsb import Spn
 
 
 # some pre-defined models
