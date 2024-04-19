@@ -34,7 +34,7 @@ axis.legend(lvmod.n)
 fig.savefig("lv.pdf")
 ```
 
-For further information, see the [demos](demos/) and the [API documentation](https://jax-smfsb.readthedocs.io/en/latest/index.html).
+For further information, see the [demos](https://github.com/darrenjw/jax-smfsb/tree/main/demos) and the [API documentation](https://jax-smfsb.readthedocs.io/en/latest/index.html).
 
 You can view this package on [GitHub](https://github.com/darrenjw/jax-smfsb) or [PyPI](https://pypi.org/project/jsmfsb/).
 
