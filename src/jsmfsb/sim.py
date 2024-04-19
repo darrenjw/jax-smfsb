@@ -15,10 +15,12 @@ def simTs(key, x0, t0, tt, dt, stepFun):
     This function simulates single realisation of a model on a regular
     grid of times using a function (closure) for advancing the state
     of the model, such as created by ‘stepGillespie’ or
-    ‘stepEuler’.
+    ‘stepCLE’.
 
     Parameters
     ----------
+    key: JAX random number key
+        An unused random number key.
     x0: array of numbers
         The intial state of the system at time t0
     t0: float
@@ -39,10 +41,11 @@ def simTs(key, x0, t0, tt, dt, stepFun):
 
     Examples
     --------
-    >>> import smfsb.models
-    >>> lv = smfsb.models.lv()
+    >>> import jax
+    >>> import jsmfsb.models
+    >>> lv = jsmfsb.models.lv()
     >>> stepLv = lv.stepGillespie()
-    >>> smfsb.simTs([50, 100], 0, 100, 0.1, stepLv)
+    >>> jsmfsb.simTs(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
     """
     n = int((tt-t0) // dt) + 1
     u = len(x0)
@@ -65,10 +68,12 @@ def simSample(key, n, x0, t0, deltat, stepFun):
     This function simulates many realisations of a model at a given
     fixed time in the future given an initial time and state, using a
     function (closure) for advancing the state of the model , such as
-    created by ‘stepGillespie’ or ‘stepEuler’.
+    created by ‘stepGillespie’ or ‘stepCLE’.
 
     Parameters
     ----------
+    key: JAX random number key
+        An unused random number key.
     n: int
         The number of samples required.
     x0: array of numbers
@@ -88,10 +93,11 @@ def simSample(key, n, x0, t0, deltat, stepFun):
 
     Examples
     --------
-    >>> import smfsb.models
-    >>> lv = smfsb.models.lv()
+    >>> import jax
+    >>> import jsmfsb.models
+    >>> lv = jsmfsb.models.lv()
     >>> stepLv = lv.stepGillespie()
-    >>> smfsb.simSample(10, [50, 100], 0, 30, stepLv)
+    >>> jsmfsb.simSample(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
     """
     u = len(x0)
     keys = jax.random.split(key, n)

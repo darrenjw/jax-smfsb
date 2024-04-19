@@ -43,14 +43,15 @@ class Spn:
 
         Examples
         --------
-        >>> import smfsb
+        >>> import jsmfsb
+        >>> import jax
         >>> import jax.numpy as jnp
-        >>> sir = smfsb.Spn(["S", "I", "R"], ["S->I", "I->R"],
+        >>> sir = jsmfsb.Spn(["S", "I", "R"], ["S->I", "I->R"],
               [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
 	      lambda x, t: jnp.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
 	      [197, 3, 0])
-        >>> stepSir = sir.stepPTS()
-        >>> smfsb.simSample(10, sir.m, 0, 20, stepSir)
+        >>> stepSir = sir.stepGillespie()
+        >>> jsmfsb.simSample(jax.random.key(42), 10, sir.m, 0, 20, stepSir)
         """
         self.n = n # species names
         self.t = t # reaction names
@@ -90,10 +91,11 @@ class Spn:
 
         Examples
         --------
-        >>> import smfsb.models
-        >>> lv = smfsb.models.lv()
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> lv = jsmfsb.models.lv()
         >>> stepLv = lv.stepGillespie()
-        >>> stepLv([50, 100], 0, 1)
+        >>> stepLv(jax.random.key(42), lv.m, 0, 1)
         """
         S = (self.post - self.pre).T
         u, v = S.shape
@@ -149,10 +151,11 @@ class Spn:
 
         Examples
         --------
-        >>> import smfsb.models
-        >>> lv = smfsb.models.lv()
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> lv = jsmfsb.models.lv()
         >>> stepLv = lv.stepCLE(0.001)
-        >>> stepLv([50, 100], 0, 1)
+        >>> stepLv(jax.random.key(42), lv.m, 0, 1)
         """
         S = (self.post - self.pre).T
         v = S.shape[1]
