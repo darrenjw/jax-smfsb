@@ -1,4 +1,5 @@
 sphinx
 sphinx-rtd-theme
 jsmfsb
+jax[cpu]
 
