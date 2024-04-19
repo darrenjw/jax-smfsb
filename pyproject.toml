@@ -28,6 +28,6 @@ packages = ["src/jsmfsb"]
 
 [project.urls]
 Homepage = "https://github.com/darrenjw/jax-smfsb"
-Documentation = "https://jsmfsb.readthedocs.io/"
+Documentation = "https://jax-smfsb.readthedocs.io/"
 Issues = "https://github.com/darrenjw/jax-smfsb/issues"
 
