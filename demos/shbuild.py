@@ -6,47 +6,52 @@ import jax
 import jax.numpy as jnp
 import jax.scipy as jsp
 import jax.lax as jl
-from jax import grad, jit
 
-from spn import Spn
+import jsmfsb
 
-from models import *
-from sim import *
+seirSH = """
+@model:3.1.1=SEIR "SEIR Epidemic model"
+ s=item, t=second, v=litre, e=item
+@compartments
+ Pop
+@species
+ Pop:S=100 s
+ Pop:E=0 s	  
+ Pop:I=5 s
+ Pop:R=0 s
+@reactions
+@r=Infection
+ S + I -> E + I
+ beta*S*I : beta=0.1
+@r=Transition
+ E -> I
+ sigma*E : sigma=0.2
+@r=Removal
+ I -> R
+ gamma*I : gamma=0.5
+"""
 
-
-
-# TODO: replace with a shorthand model description
-
-
-lvmod = lv()
-step = lvmod.stepGillespie()
+seir = jsmfsb.sh2Spn(seirSH)
+stepSeir = seir.stepGillespie()
 k0 = jax.random.key(42)
-print(step(k0, lvmod.m, 0, 30))
-
-stepC = lvmod.stepCLE(0.01)
-print(stepC(k0, lvmod.m, 0, 30))
-
-
-# simTs
-out = simTs(k0, lvmod.m, 0, 30, 0.1, step)
+out = jsmfsb.simTs(k0, seir.m, 0, 10, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
-for i in range(2):
+for i in range(4):
 	axis.plot(range(out.shape[0]), out[:,i])
 
-axis.legend(lvmod.n)
-fig.savefig("lv.pdf")
+axis.legend(seir.n)
+fig.savefig("shbuild.pdf")
 
 # simSample
-out = simSample(k0, 10000, lvmod.m, 0, 30, stepC)
-out = jnp.where(out > 1000, 1000, out)
+out = jsmfsb.simSample(k0, 10000, seir.m, 0, 5, stepSeir)
 import scipy as sp
 print(sp.stats.describe(out))
-fig, axes = plt.subplots(2,1)
-for i in range(2):
-    axes[i].hist(out[:,i], bins=50)
-fig.savefig("lvH.pdf")
+fig, axes = plt.subplots(4,1)
+for i in range(4):
+    axes[i].hist(out[:,i], bins=20)
+fig.savefig("shbuildH.pdf")
 
 # eof
 

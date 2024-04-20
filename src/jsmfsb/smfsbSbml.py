@@ -5,7 +5,7 @@
 import libsbml
 import sys
 from jsmfsb import Spn
-import numpy as np
+import jax.numpy as jnp
 from sbmlsh import mod2sbml
 
 
@@ -173,8 +173,8 @@ def model2Spn(m, verb=False):
     nr = m.getNumReactions()
     if (verb):
         print(str(nr)+" reactions")
-    pre = np.zeros((nr, ns))
-    post = np.zeros((nr, ns))
+    pre = jnp.zeros((nr, ns))
+    post = jnp.zeros((nr, ns))
     rn = []
     kl = []
     lpl = []
@@ -185,12 +185,12 @@ def model2Spn(m, verb=False):
         for j in range(nPre):
             sr = r.getReactant(j)
             sto = sr.getStoichiometry()
-            pre[i, nl.index(sr.getSpecies())] = sto
+            pre = pre.at[i, nl.index(sr.getSpecies())].set(sto)
         nPost = r.getNumProducts()
         for j in range(nPost):
             sr = r.getProduct(j)
             sto = sr.getStoichiometry()
-            post[i, nl.index(sr.getSpecies())] = sto
+            post= post.at[i, nl.index(sr.getSpecies())].set(sto)
         kli = r.getKineticLaw()
         kl += [libsbml.formulaToString(kli.getMath())]
         nlp = kli.getNumLocalParameters()
@@ -209,12 +209,12 @@ def model2Spn(m, verb=False):
         print(lpl)
     gpd.update(cd)
     def haz(x, t):
-        h = np.zeros(nr)
+        h = jnp.zeros(nr)
         xd = dict(zip(nl, x))
         glob = gpd.copy()
         glob.update(xd)
         for i in range(nr):
-            h[i] = eval(kl[i], glob, lpl[i])
+            h = h.at[i].set(eval(kl[i], glob, lpl[i]))
         return(h)
     spn = Spn(nl, rn, pre, post, haz, ml)
     spn.comp = cd
