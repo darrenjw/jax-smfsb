@@ -101,7 +101,7 @@ class Spn:
         u, v = S.shape
         @jit
         def advance(state):
-            key, x, t = state
+            key, xo, x, t = state
             h = self.h(x, t)
             h0 = jnp.sum(h)
             key, k1, k2 = jax.random.split(key, 3)
@@ -109,16 +109,15 @@ class Spn:
             t = jnp.where(h0 < minHaz, 1e90,
                           t + jax.random.exponential(k1)/h0)
             j = jax.random.choice(k2, v, p=h/h0)
-            x = jnp.add(x, S[:,j])
-            return (key, x, t)
+            xn = jnp.add(x, S[:,j])
+            return (key, x, xn, t)
         @jit
         def step(key, x0, t0, deltat):
             t = t0
             x = x0
             termt = t0 + deltat
-            # TODO: this isn't quite right, as we want the final state _before_ termt
-            key, x, t = jl.while_loop(lambda state: state[2] < termt,
-                                      advance, (key, x, t))
+            key, x, xn, t = jl.while_loop(lambda state: state[3] < termt,
+                                      advance, (key, x, x, t))
             return x
         return step
 

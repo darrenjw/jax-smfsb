@@ -34,7 +34,7 @@ seirSH = """
 seir = jsmfsb.sh2Spn(seirSH)
 stepSeir = seir.stepGillespie()
 k0 = jax.random.key(42)
-out = jsmfsb.simTs(k0, seir.m, 0, 10, 0.05, stepSeir)
+out = jsmfsb.simTs(k0, seir.m, 0, 40, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
@@ -45,7 +45,7 @@ axis.legend(seir.n)
 fig.savefig("shbuild.pdf")
 
 # simSample
-out = jsmfsb.simSample(k0, 10000, seir.m, 0, 5, stepSeir)
+out = jsmfsb.simSample(k0, 10000, seir.m, 0, 10, stepSeir)
 import scipy as sp
 print(sp.stats.describe(out))
 fig, axes = plt.subplots(4,1)
