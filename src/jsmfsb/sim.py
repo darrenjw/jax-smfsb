@@ -70,6 +70,10 @@ def simSample(key, n, x0, t0, deltat, stepFun):
     function (closure) for advancing the state of the model , such as
     created by ‘stepGillespie’ or ‘stepCLE’.
 
+    Note that this function is vectorised using `jax.vmap` rather than `jax.lax.map`.
+    This is usually (but not always) faster, especially on GPUs and TPUs. Note
+    that `simSampleMap` is identical except that it is vectorised using `jax.lax.map`.
+    
     Parameters
     ----------
     key: JAX random number key
@@ -116,6 +120,10 @@ def simSampleMap(key, n, x0, t0, deltat, stepFun):
     function (closure) for advancing the state of the model , such as
     created by ‘stepGillespie’ or ‘stepCLE’.
 
+    Note that this function is vectorised using `jax.lax.map` rather than `jax.vmap`.
+    This is usually (but not always) slower, especially on GPUs and TPUs. Note
+    that `simSample` is identical except that it is vectorised using `jax.vmap`.
+    
     Parameters
     ----------
     key: JAX random number key
