@@ -17,7 +17,8 @@ k0 = jax.random.key(42)
 
 ## Start timer
 startTime = time.time()
-out = jsmfsb.simSample(k0, 100000, lvmod.m, 0, 20, step)
+#out = jsmfsb.simSample(k0, 10000, lvmod.m, 0, 20, step)
+out = jsmfsb.simSampleMap(k0, 10000, lvmod.m, 0, 20, step)
 endTime = time.time()
 ## End timer
 elapsedTime = endTime - startTime

@@ -33,7 +33,7 @@ def simTs(key, x0, t0, tt, dt, stepFun):
         process.
     stepFun: function
         A function (closure) for advancing the state of the process,
-        such as produced by ‘stepGillespie’ or ‘stepEuler’.
+        such as produced by ‘stepGillespie’ or ‘stepCLE’.
 
     Returns
     -------
@@ -85,7 +85,7 @@ def simSample(key, n, x0, t0, deltat, stepFun):
         system state are required.
     stepFun: function
         A function (closure) for advancing the state of the process,
-        such as produced by `stepGillespie' or `stepEuler'.
+        such as produced by `stepGillespie' or `stepCLE'.
 
     Returns
     -------
@@ -98,6 +98,52 @@ def simSample(key, n, x0, t0, deltat, stepFun):
     >>> lv = jsmfsb.models.lv()
     >>> stepLv = lv.stepGillespie()
     >>> jsmfsb.simSample(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
+    """
+    u = len(x0)
+    keys = jax.random.split(key, n)
+    vstep = jit(jax.vmap(lambda k: stepFun(k, x0, t0, deltat)))
+    mat = vstep(keys)
+    return mat
+
+
+def simSampleMap(key, n, x0, t0, deltat, stepFun):
+    """Simulate a many realisations of a model at a given fixed time in the
+    future given an initial time and state, using a function (closure) for
+    advancing the state of the model
+
+    This function simulates many realisations of a model at a given
+    fixed time in the future given an initial time and state, using a
+    function (closure) for advancing the state of the model , such as
+    created by ‘stepGillespie’ or ‘stepCLE’.
+
+    Parameters
+    ----------
+    key: JAX random number key
+        An unused random number key.
+    n: int
+        The number of samples required.
+    x0: array of numbers
+        The intial state of the system at time t0.
+    t0: float
+        The intial time to be associated with the initial state.
+    deltat: float
+        The amount of time in the future of t0 at which samples of the
+        system state are required.
+    stepFun: function
+        A function (closure) for advancing the state of the process,
+        such as produced by `stepGillespie' or `stepCLE'.
+
+    Returns
+    -------
+    A matrix with rows representing simulated states at time t0+deltat.
+
+    Examples
+    --------
+    >>> import jax
+    >>> import jsmfsb.models
+    >>> lv = jsmfsb.models.lv()
+    >>> stepLv = lv.stepGillespie()
+    >>> jsmfsb.simSampleMap(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
     """
     u = len(x0)
     keys = jax.random.split(key, n)
