@@ -77,17 +77,25 @@ class Spn:
         This method returns a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        ‘simTs’) for simulating realisations of SPN models.
+        `simTs`) for simulating realisations of SPN models.
+
+        Parameters
+        ----------
+        minHaz : float
+          Minimum hazard to consider before assuming 0. Defaults to 1e-10.
+        maxHaz : float
+          Maximum hazard to consider before assuming an explosion and
+          bailing out. Defaults to 1e07.
 
         Returns
         -------
         A function which can be used to advance the state of the SPN
         model by using the Gillespie algorithm. The function closure
-        has interface ‘function(key, x0, t0, deltat)’, where ‘x0’ and ‘t0’
-        represent the initial state and time, and ‘deltat’ represents the
-        amount of time by which the process should be advanced. The
-        function closure returns a vector representing the simulated state
-        of the system at the new time.
+        has interface `function(key, x0, t0, deltat)`, where `key` is an
+        unused JAX random key, `x0` and `t0` represent the initial state 
+        and time, and `deltat` represents the amount of time by which the 
+        process should be advanced. The function closure returns a vector 
+        representing the simulated state of the system at the new time.
 
         Examples
         --------
@@ -130,7 +138,7 @@ class Spn:
         model using a simple Euler-Maruyama integration method
         method for the chemical Langevin equation form of the model.The 
         resulting function (closure) can be used in
-        conjunction with other functions (such as ‘simTs’) for simulating
+        conjunction with other functions (such as `simTs`) for simulating
         realisations of SPN models.
 
         Parameters
