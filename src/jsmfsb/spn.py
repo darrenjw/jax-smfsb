@@ -395,7 +395,8 @@ class Spn:
                 i = jax.random.choice(k2, v, p=hr[:,j]/hrs[j]) # pick a reaction
                 x = x.at[:,j].set(jnp.add(x[:,j], S[:,i]))
                 return x
-            xn = jnp.where(jax.random.uniform(k2)*h0 < hdss, diffuse(k3, x), react(k3, x))
+            xn = jnp.where(jax.random.uniform(k2)*h0 < hdss,
+                           diffuse(k3, x), react(k3, x))
             return (key, x, xn, t)
         @jit
         def step(key, x0, t0, deltat):
