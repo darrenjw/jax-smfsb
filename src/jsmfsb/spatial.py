@@ -71,7 +71,7 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     return(arr)
     
 
-def simTs2D(x0, t0, tt, dt, stepFun, verb=False):
+def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -82,6 +82,8 @@ def simTs2D(x0, t0, tt, dt, stepFun, verb=False):
 
     Parameters
     ----------
+    key: JAX random number key
+      Random key to seed the simulation.
     x0 : array
       The initial state of the process at time `t0`, a 3d array with
       dimensions corresponding to reacting species and then two
@@ -107,29 +109,33 @@ def simTs2D(x0, t0, tt, dt, stepFun, verb=False):
 
     Examples
     --------
-    >>> import smfsb.models
-    >>> import numpy as np
-    >>> lv = smfsb.models.lv()
-    >>> stepLv2d = lv.stepGillespie2D(np.array([0.6,0.6]))
+    >>> import jsmfsb.models
+    >>> import jax
+    >>> import jax.numpy as jnp
+    >>> lv = jsmfsb.models.lv()
+    >>> stepLv2d = lv.stepGillespie2D(jnp.array([0.6,0.6]))
     >>> M = 10
     >>> N = 15
     >>> T = 5
-    >>> x0 = np.zeros((2,M,N))
-    >>> x0[:,int(M/2),int(N/2)] = lv.m
-    >>> smfsb.simTs2D(x0, 0, T, 1, stepLv2d, True)
+    >>> x0 = jnp.zeros((2,M,N))
+    >>> x0 = x0.at[:,int(M/2),int(N/2)].set(lv.m)
+    >>> k0 = jax.random.key(42)
+    >>> jsmfsb.simTs2D(k0, x0, 0, T, 1, stepLv2d, True)
     """
     N = int((tt - t0)//dt + 1)
     u, m, n = x0.shape
-    arr = np.zeros((u, m, n, N))
+    arr = jnp.zeros((u, m, n, N))
     x = x0
     t = t0
-    arr[:,:,:,0] = x
+    arr = arr.at[:,:,:,0].set(x)
+    # TODO: replace with a scan operation (not urgent)
     for i in range(1, N):
+        key, k1 = jax.random.split(key)
         if (verb):
             print(N-i)
         t = t + dt
-        x = stepFun(x, t, dt)
-        arr[:,:,:,i] = x
+        x = stepFun(k1, x, t, dt)
+        arr = arr.at[:,:,:,i].set(x)
     return(arr)
     
 
