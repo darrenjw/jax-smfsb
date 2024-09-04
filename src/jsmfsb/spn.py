@@ -674,6 +674,11 @@ class Spn:
                                 jnp.sqrt(a + down(a))*down(dwts)))
             a = rectify(a)
             return a
+        def react(si):
+            si = si.reshape(2, v)
+            hri = si[0]
+            dwti = si[1]
+            return S @ (hri * dt + jnp.sqrt(hri) * dwti)
         def step(key, x0, t0, deltat):
             uu, m , n = x0.shape
             T = int(deltat // dt) + 1
@@ -685,11 +690,9 @@ class Spn:
                 x = diffuse(k1, x)
                 hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
                 dwt = jax.random.normal(k2, (v, m, n))*sdt
-                # TODO: FIX THIS DOUBLE LOOP!!!
-                for i in range(m):
-                    for j in range(n):
-                        x = x.at[:,i,j].set(x[:,i,j] + S @ (hr[:,i,j] * dt +
-                                                   jnp.sqrt(hr[:,i,j]) * dwt[:,i,j]))
+                stacked = jnp.stack((hr, dwt)) # (2, v, m, n)
+                x = x + jnp.apply_along_axis(react, 0, stacked.reshape(2*v, m, n))
+                # End of fix
                 x = rectify(x)
                 return (x, t), x
             _, out = jl.scan(advance, (x0, t0), keys) # TODO: fori?
