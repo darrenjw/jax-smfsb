@@ -511,6 +511,92 @@ class Spn:
         return step
 
     
+    def stepCLE1D(self, d, dt = 0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        Euler-Maruyama discretisation of the CLE on a 1D regular grid
+        
+        This method creates a function for advancing the state of an SPN
+        model using a simple Euler-Maruyama discretisation of the CLE on a
+        1D regular grid. The resulting function (closure) can be used in
+        conjunction with other functions (such as `simTs1D`) for
+        simulating realisations of SPN models in space and time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore twice this value (as it can leave to
+          the left or the right).
+        dt : float
+          Time step for the Euler-Maruyama discretisation.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using a simple Euler-Maruyama algorithm. The function
+        closure has parameters `key`, `x0`, `t0`, `deltat`, where `key` is a
+        JAX random number key, `x0` is
+        a matrix with rows corresponding to species and columns
+        corresponding to voxels, representing the initial condition, `t0`
+        represents the initial state and time, and `deltat` represents the
+        amount of time by which the process should be advanced. The
+        function closure returns a matrix representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> import jax.numpy as jnp
+        >>> lv = jsmfsb.models.lv()
+        >>> stepLv1d = lv.stepCLE1D(jnp.array([0.6,0.6]))
+        >>> N = 20
+        >>> x0 = np.zeros((2,N))
+        >>> x0 = x0.at[:,int(N/2)].set(lv.m)
+        >>> k0 = jax.random.key(42)
+        >>> stepLv1d(k0, x0, 0, 1)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        sdt = np.sqrt(dt)
+        def forward(m):
+            return jnp.roll(m, -1, axis=1)
+        def back(m):
+            return jnp.roll(m, +1, axis=1)
+        def laplacian(m):
+            return forward(m) + back(m) - 2*m
+        def rectify(m):
+            return jnp.where(m < 0, 0, m)
+        def diffuse(key, m):
+            n = m.shape[1]
+            noise = jax.random.normal(key, (u, n))*sdt
+            m = m + (jnp.diag(d) @ laplacian(m))*dt + \
+              jnp.diag(jnp.sqrt(d))@(jnp.sqrt(m + forward(m))*noise -
+                                   jnp.sqrt(m + back(m))*back(noise))
+            m = rectify(m)
+            return m
+        def step(key, x0, t0, deltat):
+            n = x0.shape[1]
+            T = int(deltat // dt) + 1
+            keys = jax.random.split(key, T)
+            def advance(state, key):
+                k1, k2 = jax.random.split(key)
+                x, t = state
+                t = t + dt
+                x = diffuse(k1, x)
+                hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                dwt = jax.random.normal(k2, (v, n))*sdt
+                x = x + S @ (hr * dt + jnp.diag(jnp.sqrt(hr)) @ dwt)
+                x = rectify(x)
+                return (x, t), x
+            _, out = jl.scan(advance, (x0, t0), keys) # TODO: fori better than scan?
+            return out[T-1]
+        step = jit(step, static_argnums=(3,))
+        return step
+    
 
 
 # eof
