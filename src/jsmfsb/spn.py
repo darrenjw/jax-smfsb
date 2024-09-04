@@ -590,7 +590,7 @@ class Spn:
                 x = x + S @ (hr * dt + jnp.diag(jnp.sqrt(hr)) @ dwt)
                 x = rectify(x)
                 return (x, t), x
-            _, out = jl.scan(advance, (x0, t0), keys) # TODO: fori better than scan?
+            _, out = jl.scan(advance, (x0, t0), keys)
             return out[T-1]
         step = jit(step, static_argnums=(3,))
         return step
@@ -692,7 +692,7 @@ class Spn:
                 x = x + jnp.apply_along_axis(react, 0, stacked.reshape(2*v, m, n))
                 x = rectify(x)
                 return (x, t), x
-            _, out = jl.scan(advance, (x0, t0), keys) # TODO: fori?
+            _, out = jl.scan(advance, (x0, t0), keys)
             return out[T-1]
         step = jit(step, static_argnums=(3,))
         return step
