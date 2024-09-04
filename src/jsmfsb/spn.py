@@ -472,8 +472,7 @@ class Spn:
                 uu, m, n = x.shape
                 k1, k2, k3 = jax.random.split(key, 3)
                 r = jax.random.choice(k1, m*n, p=hds.flatten()/hdss) # pick a box
-                i = r // n # TODO: div-mod operator in python?
-                j = r % n
+                i, j = divmod(r, n)
                 k = jax.random.choice(k2, u, p=hd[:,i,j]/hds[i,j]) # pick species
                 x = x.at[k,i,j].set(x[k,i,j] - 1) # decrement chosen box
                 un = jax.random.uniform(k3)
@@ -492,8 +491,7 @@ class Spn:
                 uu, m, n = x.shape
                 k1, k2 = jax.random.split(key, 2)
                 r = jax.random.choice(k1, m*n, p=hrs.flatten()/hrss) # pick a box
-                i = r // n # TODO: div-mod
-                j = r % n
+                i, j = divmod(r, n)
                 k = jax.random.choice(k2, v, p=hr[:,i,j]/hrs[i,j]) # pick a reaction
                 x = x.at[:,i,j].set(jnp.add(x[:,i,j], S[:,k]))
                 return x
