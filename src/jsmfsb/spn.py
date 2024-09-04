@@ -554,7 +554,7 @@ class Spn:
         >>> lv = jsmfsb.models.lv()
         >>> stepLv1d = lv.stepCLE1D(jnp.array([0.6,0.6]))
         >>> N = 20
-        >>> x0 = np.zeros((2,N))
+        >>> x0 = jnp.zeros((2,N))
         >>> x0 = x0.at[:,int(N/2)].set(lv.m)
         >>> k0 = jax.random.key(42)
         >>> stepLv1d(k0, x0, 0, 1)
@@ -596,7 +596,106 @@ class Spn:
             return out[T-1]
         step = jit(step, static_argnums=(3,))
         return step
+
     
+    def stepCLE2D(self, d, dt = 0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        Euler-Maruyama discretisation of the CLE on a 2D regular grid
+        
+        This method creates a function for advancing the state of an SPN
+        model using a simple Euler-Maruyama discretisation of the CLE on a
+        2D regular grid. The resulting function (closure) can be used in
+        conjunction with other functions (such as `simTs2D`) for
+        simulating realisations of SPN models in space and time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore four times this value (as it can leave
+          in one of 4 directions).
+        dt : float
+          Time step for the Euler-Maruyama discretisation.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using a simple Euler-Maruyama algorithm. The function
+        closure has parameters `key`, `x0`, `t0`, `deltat`, where `x0` is
+        a 3d array with indices species, then rows and columns
+        corresponding to voxels, representing the initial condition, `t0`
+        represents the initial state and time, and `deltat` represents the
+        amount of time by which the process should be advanced. The
+        function closure returns a matrix representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> import jax.numpy as jnp
+        >>> lv = jsmfsb.models.lv()
+        >>> stepLv2d = lv.stepCLE2D(jnp.array([0.6,0.6]))
+        >>> M = 15
+        >>> N = 20
+        >>> x0 = jnp.zeros((2,M,N))
+        >>> x0 = x0.at[:,int(M/2),int(N/2)].set(lv.m)
+        >>> k0 = jax.random.key(42)
+        >>> stepLv2d(k0, x0, 0, 1)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        sdt = np.sqrt(dt)
+        def left(a):
+            return jnp.roll(a, -1, axis=1)
+        def right(a):
+            return jnp.roll(a, +1, axis=1)
+        def up(a):
+            return jnp.roll(a, -1, axis=2)
+        def down(a):
+            return jnp.roll(a, +1, axis=2)
+        def laplacian(a):
+            return left(a) + right(a) + up(a) + down(a) - 4*a
+        def rectify(a):
+            return jnp.where(a < 0, 0, a)
+        def diffuse(key, a):
+            uu, m, n = a.shape
+            k1, k2 = jax.random.split(key)
+            dwt = jax.random.normal(k1, (u, m, n))*sdt
+            dwts = jax.random.normal(k2, (u, m, n))*sdt
+            a = a + (jnp.apply_along_axis(lambda xi: xi*d, 0, laplacian(a)))*dt + \
+              jnp.apply_along_axis(lambda xi: xi*jnp.sqrt(d), 0,
+                                  (jnp.sqrt(a + left(a))*dwt -
+                                   jnp.sqrt(a + right(a))*right(dwt) +
+                                   jnp.sqrt(a + up(a))*dwts -
+                                jnp.sqrt(a + down(a))*down(dwts)))
+            a = rectify(a)
+            return a
+        def step(key, x0, t0, deltat):
+            uu, m , n = x0.shape
+            T = int(deltat // dt) + 1
+            keys = jax.random.split(key, T)
+            def advance(state, key):
+                k1, k2 = jax.random.split(key)
+                x, t = state
+                t = t + dt
+                x = diffuse(k1, x)
+                hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                dwt = jax.random.normal(k2, (v, m, n))*sdt
+                # TODO: FIX THIS DOUBLE LOOP!!!
+                for i in range(m):
+                    for j in range(n):
+                        x = x.at[:,i,j].set(x[:,i,j] + S @ (hr[:,i,j] * dt +
+                                                   jnp.sqrt(hr[:,i,j]) * dwt[:,i,j]))
+                x = rectify(x)
+                return (x, t), x
+            _, out = jl.scan(advance, (x0, t0), keys) # TODO: fori?
+            return out[T-1]
+        step = jit(step, static_argnums=(3,))
+        return step
 
 
 # eof

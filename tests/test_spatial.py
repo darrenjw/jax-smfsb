@@ -48,7 +48,7 @@ def test_simTs2D():
     stepLv2d = lv.stepGillespie2D(jnp.array([0.6, 0.6]))
     k0 = jax.random.key(42)
     out = jsmfsb.simTs2D(k0, x0, 0, 5, 1, stepLv2d)
-    assert(out.shape == (2,M,N,6))
+    assert(out.shape == (2, M, N, 6))
 
 def test_stepCLE1D():
     N=20
@@ -58,8 +58,18 @@ def test_stepCLE1D():
     stepLv1d = lv.stepCLE1D(jnp.array([0.6, 0.6]))
     k0 = jax.random.key(42)
     x1 = stepLv1d(k0, x0, 0, 1)
-    assert(x1.shape == (2,N))
+    assert(x1.shape == (2, N))
 
+def test_stepCLE2D():
+    M=16
+    N=20
+    x0 = jnp.zeros((2,M,N))
+    lv = jsmfsb.models.lv()
+    x0 = x0.at[:,int(M/2),int(N/2)].set(lv.m)
+    stepLv2d = lv.stepCLE2D(jnp.array([0.6, 0.6]))
+    k0 = jax.random.key(42)
+    x1 = stepLv2d(k0, x0, 0, 1)
+    assert(x1.shape == (2, M, N))
 
 
 
