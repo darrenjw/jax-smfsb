@@ -53,8 +53,8 @@ def simTs(key, x0, t0, tt, dt, stepFun):
     @jit
     def advance(state, key):
         x, t = state
-        t = t + dt
         x = stepFun(key, x, t, dt)
+        t = t + dt
         return (x, t), x
     _, mat = jl.scan(advance, (x0, t0), keys)
     return mat

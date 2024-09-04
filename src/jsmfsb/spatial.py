@@ -2,7 +2,9 @@
 # Note that the actual simulation code is in the Spn object in the spn module
 
 import jax
+from jax import jit
 import jax.numpy as jnp
+import jax.lax as jl
 
 def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
@@ -56,19 +58,17 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     """
     N = int((tt - t0)//dt + 1)
     u, n = x0.shape
-    arr = jnp.zeros((u, n, N))
-    x = x0
-    t = t0
-    arr = arr.at[:,:,0].set(x)
-    # TODO: replace with a "scan" operation (not urgent)
-    for i in range(1, N):
-        key, k1 = jax.random.split(key)
-        if (verb):
-            print(N-i)
+    keys = jax.random.split(key, N)
+    @jit
+    def advance(state, key):
+        x, t = state
+        if (verb == True):
+            jax.debug.print("{t}", t=t)
+        x = stepFun(key, x, t, dt)
         t = t + dt
-        x = stepFun(k1, x, t, dt)
-        arr = arr.at[:,:,i].set(x)
-    return(arr)
+        return (x, t), x
+    _, arr = jl.scan(advance, (x0, t0), keys)
+    return jnp.moveaxis(arr, 0, 2)
     
 
 def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
@@ -124,20 +124,17 @@ def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
     """
     N = int((tt - t0)//dt + 1)
     u, m, n = x0.shape
-    arr = jnp.zeros((u, m, n, N))
-    x = x0
-    t = t0
-    arr = arr.at[:,:,:,0].set(x)
-    # TODO: replace with a scan operation (not urgent)
-    for i in range(1, N):
-        key, k1 = jax.random.split(key)
-        if (verb):
-            print(N-i)
+    keys = jax.random.split(key, N)
+    @jit
+    def advance(state, key):
+        x, t = state
+        if (verb == True):
+            jax.debug.print("{t}", t=t)
+        x = stepFun(key, x, t, dt)
         t = t + dt
-        x = stepFun(k1, x, t, dt)
-        arr = arr.at[:,:,:,i].set(x)
-    return(arr)
-    
+        return (x, t), x
+    _, arr = jl.scan(advance, (x0, t0), keys)
+    return jnp.moveaxis(arr, 0, 3)
 
 
 # eof
