@@ -36,6 +36,14 @@ jsmfsb.spn module
    :undoc-members:
    :show-inheritance:
 
+jsmfsb.spatial module
+-----------------
+
+.. automodule:: jsmfsb.spatial
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
