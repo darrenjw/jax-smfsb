@@ -374,19 +374,11 @@ class Spn:
                 k1, k2, k3 = jax.random.split(key, 3)
                 j = jax.random.choice(k1, n, p=hds/hdss) # pick a box
                 i = jax.random.choice(k2, u, p=hd[:,j]/hds[j]) # pick species
-                x[i,j] = x[i,j]-1 # decrement chosen box
-                if (jax.random.uniform(k3) < 0.5):
-                    # left
-                    if (j>0):
-                        x[i,j-1] = x[i,j-1] + 1
-                    else:
-                        x[i,n-1] = x[i,n-1] + 1
-                else:
-                    # right
-                    if (j<n-1):
-                        x[i,j+1] = x[i,j+1] + 1
-                    else:
-                        x[i,0] = x[i,0] + 1
+                x = x.at[i,j].set(x[i,j] - 1) # decrement chosen box
+                ind = jnp.where(jax.random.uniform(k3) < 0.5, j-1, j+1)
+                ind = jnp.where(ind < 0, 0, ind)
+                ind = jnp.where(ind > n-1, n-1, ind)
+                x = x.at[i, ind].set(x[i, ind] + 1) # increment new box
                 return x
             def react(key, x):
                 n = x.shape[1]
