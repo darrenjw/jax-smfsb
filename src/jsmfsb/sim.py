@@ -48,7 +48,6 @@ def simTs(key, x0, t0, tt, dt, stepFun):
     >>> jsmfsb.simTs(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
     """
     n = int((tt-t0) // dt) + 1
-    u = len(x0)
     keys = jax.random.split(key, n)
     @jit
     def advance(state, key):
