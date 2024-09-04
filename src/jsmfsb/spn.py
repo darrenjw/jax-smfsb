@@ -692,7 +692,6 @@ class Spn:
                 dwt = jax.random.normal(k2, (v, m, n))*sdt
                 stacked = jnp.stack((hr, dwt)) # (2, v, m, n)
                 x = x + jnp.apply_along_axis(react, 0, stacked.reshape(2*v, m, n))
-                # End of fix
                 x = rectify(x)
                 return (x, t), x
             _, out = jl.scan(advance, (x0, t0), keys) # TODO: fori?
