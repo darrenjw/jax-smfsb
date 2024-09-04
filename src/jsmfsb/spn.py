@@ -377,8 +377,8 @@ class Spn:
                 i = jax.random.choice(k2, u, p=hd[:,j]/hds[j]) # pick species
                 x = x.at[i,j].set(x[i,j] - 1) # decrement chosen box
                 ind = jnp.where(jax.random.uniform(k3) < 0.5, j-1, j+1)
-                ind = jnp.where(ind < 0, 0, ind)
-                ind = jnp.where(ind > n-1, n-1, ind)
+                ind = jnp.where(ind < 0, n-1, ind)
+                ind = jnp.where(ind > n-1, 0, ind)
                 x = x.at[i, ind].set(x[i, ind] + 1) # increment new box
                 return x
             def react(key, x):
@@ -401,6 +401,114 @@ class Spn:
             return x
         return step
 
+    
+    def stepGillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
+        """Create a function for advancing the state of an SPN by using the
+        Gillespie algorithm on a 2D regular grid
+
+        This method creates a function for advancing the state of an SPN
+        model using the Gillespie algorithm. The resulting function
+        (closure) can be used in conjunction with other functions (such as
+        `simTs2D`) for simulating realisations of SPN models in space and
+        time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore four times this value (as it can leave in
+          one of 4 directions).
+        minHaz : float
+          Minimum hazard to consider before assuming 0. Defaults to 1e-10.
+        maxHaz : float
+          Maximum hazard to consider before assuming an explosion and
+          bailing out. Defaults to 1e07.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using the Gillespie algorithm. The function closure
+        has arguments `key`, `x0`, `t0`, `deltat`, where `key` is a JAX random
+        key, `x0` is a 3d array with dimensions corresponding to species
+        then two spatial dimensions, representing the initial condition,
+        `t0` represents the time of the initial state, and `deltat`
+        represents the amount of time by which the process should be advanced.
+        The function closure returns an array representing the simulated
+        state of the system at the new time.
+
+        Examples
+        --------
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> import jax.numpy as jnp
+        >>> lv = jsmfsb.models.lv()
+        >>> stepLv2d = lv.stepGillespie2D(jnp.array([0.6, 0.6]))
+        >>> N = 20
+        >>> x0 = jnp.zeros((2, N, N))
+        >>> x0 = x0.at[:, int(N/2), int(N/2)].set(lv.m)
+        >>> k0 = jax.random.key(42)
+        >>> stepLv2d(k0, x0, 0, 1)
+        """
+        S = (self.post - self.pre).T
+        u, v = S.shape
+        @jit
+        def advance(state):
+            key, xo, x, t = state
+            key, k1, k2, k3 = jax.random.split(key, 4)
+            hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+            hrs = jnp.sum(hr, axis=(0))
+            hrss = hrs.sum()
+            hd = jnp.apply_along_axis(lambda xi: xi*d*4, 0, x)
+            hds = jnp.sum(hd, axis=(0))
+            hdss = hds.sum()
+            h0 = hrss + hdss
+            t = jnp.where(h0 > maxHaz, 1e90, t)
+            t = jnp.where(h0 < minHaz, 1e90,
+                          t + jax.random.exponential(k1)/h0)            
+            def diffuse(key, x):
+                uu, m, n = x.shape
+                k1, k2, k3 = jax.random.split(key, 3)
+                r = jax.random.choice(k1, m*n, p=hds.flatten()/hdss) # pick a box
+                i = r // n # TODO: div-mod operator in python?
+                j = r % n
+                k = jax.random.choice(k2, u, p=hd[:,i,j]/hds[i,j]) # pick species
+                x = x.at[k,i,j].set(x[k,i,j] - 1) # decrement chosen box
+                un = jax.random.uniform(k3)
+                ind = jnp.where(un < 0.25, jnp.array([i, j-1]),
+                                 jnp.where(un < 0.5, jnp.array([i, j+1]),
+                                           jnp.where(un < 0.75, jnp.array([i-1, j]), jnp.array([i+1, j]))))
+                i = ind[0]
+                j = ind[1]
+                i = jnp.where(i < 0, m-1, i)
+                i = jnp.where(i > m-1, 0, i)
+                j = jnp.where(j < 0, n-1, j)
+                j = jnp.where(j > n-1, 0, j)
+                x = x.at[k, i, j].set(x[k, i, j] + 1) # increment new box
+                return x
+            def react(key, x):
+                uu, m, n = x.shape
+                k1, k2 = jax.random.split(key, 2)
+                r = jax.random.choice(k1, m*n, p=hrs.flatten()/hrss) # pick a box
+                i = r // n # TODO: div-mod
+                j = r % n
+                k = jax.random.choice(k2, v, p=hr[:,i,j]/hrs[i,j]) # pick a reaction
+                x = x.at[:,i,j].set(jnp.add(x[:,i,j], S[:,k]))
+                return x
+            xn = jnp.where(jax.random.uniform(k2)*h0 < hdss,
+                           diffuse(k3, x), react(k3, x))
+            return (key, x, xn, t) 
+        @jit
+        def step(key, x0, t0, deltat):
+            t = t0
+            x = x0
+            termt = t0 + deltat
+            key, x, xn, t = jl.while_loop(lambda state: state[3] < termt,
+                                          advance, (key, x, x, t))
+            return x
+        return step
 
     
 
