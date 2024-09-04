@@ -42,15 +42,17 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
 
     Examples
     --------
-    >>> import smfsb.models
-    >>> import numpy as np
-    >>> lv = smfsb.models.lv()
-    >>> stepLv1d = lv.stepGillespie1D(np.array([0.6,0.6]))
+    >>> import jsmfsb.models
+    >>> import jax
+    >>> import jax.numpy as jnp
+    >>> lv = jsmfsb.models.lv()
+    >>> stepLv1d = lv.stepGillespie1D(jnp.array([0.6,0.6]))
     >>> N = 10
     >>> T = 5
-    >>> x0 = np.zeros((2,N))
-    >>> x0[:,int(N/2)] = lv.m
-    >>> smfsb.simTs1D(x0, 0, T, 1, stepLv1d, True)
+    >>> x0 = jnp.zeros((2,N))
+    >>> x0 = x0.at[:,int(N/2)].set(lv.m)
+    >>> k0 = jax.random.key(42)
+    >>> jsmfsb.simTs1D(k0, x0, 0, T, 1, stepLv1d, True)
     """
     N = int((tt - t0)//dt + 1)
     u, n = x0.shape
@@ -58,7 +60,7 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     x = x0
     t = t0
     arr = arr.at[:,:,0].set(x)
-    # TODO: replace with a scan operation
+    # TODO: replace with a "scan" operation (not urgent)
     for i in range(1, N):
         key, k1 = jax.random.split(key)
         if (verb):

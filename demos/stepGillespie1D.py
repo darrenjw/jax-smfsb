@@ -16,7 +16,7 @@ stepLv1d = lv.stepGillespie1D(jnp.array([0.6, 0.6]))
 x1 = stepLv1d(k0, x0, 0, 1)
 print(x1)
 out = jsmfsb.simTs1D(k0, x0, 0, T, 1, stepLv1d, True)
-print(out)
+#print(out)
 
 fig, axis = plt.subplots()
 for i in range(2):

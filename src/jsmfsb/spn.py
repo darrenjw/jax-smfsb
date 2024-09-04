@@ -344,9 +344,10 @@ class Spn:
         Examples
         --------
         >>> import jsmfsb.models
+        >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv1d = lv.stepGillespie1D(np.array([0.6,0.6]))
+        >>> stepLv1d = lv.stepGillespie1D(jnp.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2,N))
         >>> x0 = x0.at[:,int(N/2)].set(lv.m)

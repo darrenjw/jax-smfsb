@@ -24,5 +24,9 @@ publish:
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py tests/*.py &
 
+todo:
+	grep TODO: demos/*.py src/jsmfsb/*.py tests/*.py
+
+
 
 # eof
