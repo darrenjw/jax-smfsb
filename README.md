@@ -6,7 +6,7 @@ Python code relating to the book [Stochastic Modelling for Systems Biology, thir
 
 There is a regular Python+Numpy package on PyPI, [smfsb](https://pypi.org/project/smfsb/), which has complete coverage of the book. If you are new to the book and/or this codebase, that is probably a simpler/better place to start.
 
-*This* package covers all of the *core simulation and inference algorithms* from the book, including the parsing of SBML and SBML-shorthand models. These core algorithms will run very fast, using [JAX](https://jax.readthedocs.io/). Computationally intensive algorithms will typically run between 50 and 150 times faster than they would using the regular `smfsb` package, even without a GPU (but YMMV). You must install JAX (which is system dependent), before attempting to install this package. See the JAX documentation for details, but for a CPU-only installation, it should be as simple as `pip install jax`.
+*This* package covers all of the *core simulation and inference algorithms* from the book, including the parsing of SBML and SBML-shorthand models. These core algorithms will run very fast, using [JAX](https://jax.readthedocs.io/). Computationally intensive algorithms will typically run between 50 and 150 times faster than they would using the regular `smfsb` package, even without a GPU (but YMMV). You must install JAX (which is system dependent), before attempting to install this package. See the [JAX documentation](https://jax.readthedocs.io/en/latest/installation.html) for details, but for a CPU-only installation, it should be as simple as `pip install jax`.
 
 Once you have JAX installed and working correctly, you can install this package with:
 ```bash
