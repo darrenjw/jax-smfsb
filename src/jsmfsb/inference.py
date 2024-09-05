@@ -4,12 +4,11 @@
 import jax
 import jax.numpy as jnp
 from jax import jit
-import math
 
-# TODO: think about jitting
+
 def metropolisHastings(key, init, logLik, rprop,
                        ldprop=lambda n, o: 1, ldprior=lambda x: 1,
-                       iters=10000, thin=10, verb=True, debug=False):
+                       iters=10000, thin=10, verb=True):
     """Run a Metropolis-Hastings MCMC algorithm for the parameters of a
     Bayesian posterior distribution
 
@@ -61,10 +60,6 @@ def metropolisHastings(key, init, logLik, rprop,
     verb : boolean
       Boolean indicating whether some progress information should
       be printed to the console. Defaults to `True`.
-    debug : boolean
-      Boolean indicating whether debugging information is required.
-      Prints information about each iteration to console, to, eg.,
-      debug a crashing sampler.
 
     Returns
     -------
@@ -78,37 +73,33 @@ def metropolisHastings(key, init, logLik, rprop,
     >>> import jax.numpy as jnp
     >>> import jax.scipy as jsp
     >>> k0 = jax.random.key(42)
-    >>> data = jax.random.normal(k0, 250)*2 + 5
-    >>> llik = lambda x: np.sum(sp.stats.norm.logpdf(data, x[0], x[1]))
+    >>> k1, k2 = jax.random.split(k0)
+    >>> data = jax.random.normal(k1, 250)*2 + 5
+    >>> llik = lambda x: jnp.sum(jsp.stats.norm.logpdf(data, x[0], x[1]))
     >>> prop = lambda k, x: jax.random.normal(k, 2)*0.1 + x
-    >>> jsmfsb.metropolisHastings(jnp.array([1,1]), llik, prop)
+    >>> jsmfsb.metropolisHastings(k2, jnp.array([1.0,1.0]), llik, prop)
     """
-    p = len(init)
-    ll = -math.inf
-    mat = jnp.zeros((iters, p))
-    x = init
-    if (verb):
-        print(f"{iters} iterations")
-    for i in range(iters):
+    def step(s, k):
+        [x, ll] = s
+        k1, k2 = jax.random.split(k)
+        prop = rprop(k1, x)
+        llprop = logLik(prop)
+        a = (llprop - ll + ldprior(prop) -
+             ldprior(x) + ldprop(x, prop) - ldprop(prop, x))
+        accept = (jnp.log(jax.random.uniform(k2)) < a)
+        s = [jnp.where(accept, prop, x), jnp.where(accept, llprop, ll)]
+        return s, s
+    def itera(s, k):
         if (verb):
-            print(f"{i} ", end='', flush=True)
-        for j in range(thin):
-            key, k1, k2 = jax.random.split(key, 3)
-            prop = rprop(k1, x)
-            if (ldprior(prop) > -math.inf):
-                llprop = logLik(prop)
-                a = (llprop - ll + ldprior(prop) -
-                     ldprior(x) + ldprop(x, prop) - ldprop(prop, x))
-                if (debug):
-                    print(f"x={x}, prop={prop}, ll={ll}, llprop={llprop}, a={a}")
-                if (jnp.log(jax.random.uniform(k2)) < a):
-                    x = prop
-                    ll = llprop
-        mat = mat.at[i,:].set(x)
-    if (verb):
-        print("Done.")
-    return mat
-
+            jax.debug.print("{s}", s=s)
+        keys = jax.random.split(k, thin)
+        _, states = jax.lax.scan(step, s, keys)
+        final = [states[0][thin-1], states[1][thin-1]]
+        return final, final
+    keys = jax.random.split(key, iters)
+    _, states = jax.lax.scan(itera, [init, -jnp.inf], keys)
+    return states[0]
+    
 
 
 
