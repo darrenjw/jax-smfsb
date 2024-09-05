@@ -163,8 +163,8 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>> 
     >>> mll = smfsb.pfMLLik(80, simX, 0, step, obsll, smfsb.data.LVnoise10)
     >>> k0 = jax.random.key(42)
-    >>> mll(k0, np.array([1, 0.005, 0.6]))
-    >>> mll(k0, np.array([2, 0.005, 0.6]))
+    >>> mll(k0, jnp.array([1, 0.005, 0.6]))
+    >>> mll(k0, jnp.array([2, 0.005, 0.6]))
     """
     no = data.shape[1]
     times = jnp.concatenate((jnp.array([t0]), data[:,0]))
@@ -178,7 +178,6 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
         print(obs[range(5),:])
     @jit
     def go(key, th):
-        ll = 0.0
         key, k1 = jax.random.split(key)
         keys = jax.random.split(k1, n)
         xmat = jax.lax.map(lambda k: simX0(k, t0, th), keys)
@@ -186,7 +185,9 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
         if (debug):
             print(sh)
             print(xmat[range(5),:])
-        for i in range(len(deltas)):
+        def advance(state, key):
+            [i, xmat, ll] = state
+            assert(xmat.shape == sh)
             key, k1, k2 = jax.random.split(key, 3)
             keys = jax.random.split(k1, n)
             def prop(k, x):
@@ -198,11 +199,12 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
             m = jnp.max(lw)
             sw = jnp.exp(lw - m)
             ssw = jnp.sum(sw)
-            ll = ll + m + jnp.log(ssw/n)
             rows = jax.random.choice(k2, n, shape=(n,), p=sw/ssw)
-            xmat = xmat[rows,:]
-            assert(xmat.shape == sh)
-        return ll
+            state = [i+1, xmat[rows,:], ll + m + jnp.log(ssw/n)]
+            return state, state
+        keys = jax.random.split(key, len(deltas))
+        _, states = jax.lax.scan(advance, [0, xmat, 0.0], keys)
+        return states[2][len(deltas)]
     return go
 
 
