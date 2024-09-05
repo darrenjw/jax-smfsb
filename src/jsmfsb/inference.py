@@ -176,6 +176,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
         print(deltas[range(5)])
         print(len(deltas))
         print(obs[range(5),:])
+    @jit
     def go(key, th):
         ll = 0.0
         key, k1 = jax.random.split(key)
