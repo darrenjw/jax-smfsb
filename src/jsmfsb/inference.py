@@ -25,13 +25,17 @@ def metropolisHastings(key, init, logLik, rprop,
       A key to seed the simulation.
     init : vector
       A parameter vector with which to initialise the MCMC algorithm.
-    logLik : function
-      A function which takes a parameter (such as `init`) as its
-      only required argument and returns the log-likelihood of the
+    logLik : (stochastic) function
+      A function which takes two arguments: a JAX random key and
+      a parameter (the same type as `init`) as its
+      second argument. It should return the log-likelihood of the
       data. Note that it is fine for this to return the log of an
       unbiased estimate of the likelihood, in which case the
       algorithm will be an "exact approximate" pseudo-marginal MH
-      algorithm.
+      algorithm. This is the reason why the function should accept
+      a JAX random key. In the "vanilla" case, where the log-likelihood
+      is deterministic, the function should simply ignore the key that
+      is passed in.
     rprop : stochastic function
       A function which takes a random key and a current parameter
       as its two required arguments and returns a single sample
@@ -81,12 +85,12 @@ def metropolisHastings(key, init, logLik, rprop,
     """
     def step(s, k):
         [x, ll] = s
-        k1, k2 = jax.random.split(k)
+        k1, k2, k3 = jax.random.split(k, 3)
         prop = rprop(k1, x)
-        llprop = logLik(prop)
+        llprop = logLik(k2, prop)
         a = (llprop - ll + ldprior(prop) -
              ldprior(x) + ldprop(x, prop) - ldprop(prop, x))
-        accept = (jnp.log(jax.random.uniform(k2)) < a)
+        accept = (jnp.log(jax.random.uniform(k3)) < a)
         s = [jnp.where(accept, prop, x), jnp.where(accept, llprop, ll)]
         return s, s
     def itera(s, k):
