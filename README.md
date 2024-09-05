@@ -1,4 +1,4 @@
-# JAX-SMfSB
+# JAX-SMfSB (jsmfsb)
 
 ## SMfSB code in Python+JAX
 
