@@ -35,7 +35,7 @@ def prop(k, th, tune=0.01):
     return jnp.exp(jax.random.normal(k, shape=(3))*tune) * th
 
 thmat = jsmfsb.metropolisHastings(k3, jnp.array([1, 0.005, 0.6]), mll, prop,
-                                  iters=5000, thin=10, verb=False)
+                                  iters=5000, thin=1, verb=False)
 
 print("MCMC done. Now processing the results...")
 

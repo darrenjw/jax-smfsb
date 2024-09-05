@@ -44,6 +44,22 @@ jsmfsb.spatial module
    :undoc-members:
    :show-inheritance:
 
+jsmfsb.inference module
+-----------------
+
+.. automodule:: jsmfsb.inference
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+jsmfsb.data module
+-----------------
+
+.. automodule:: jsmfsb.data
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

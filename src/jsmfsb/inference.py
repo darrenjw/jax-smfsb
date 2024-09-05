@@ -155,17 +155,18 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>> import jax.scipy as jsp
     >>> import jsmfsb
     >>> def obsll(x, t, y, th):
-    >>>     return jnp.sum(jsp.stats.norm.logpdf(y-x, scale=10)
+    >>>     return jnp.sum(jsp.stats.norm.logpdf(y-x, scale=10))
     >>> 
     >>> def simX(key, t0, th):
     >>>     k1, k2 = jax.random.split(key)
-    >>>     return jnp.array([jax.random.poisson(k1, 50), jax.random.poisson(k2, 100)])
+    >>>     return jnp.array([jax.random.poisson(k1, 50),
+    >>>              jax.random.poisson(k2, 100)]).astype(jnp.float32)
     >>> 
     >>> def step(key, x, t, dt, th):
-    >>>     sf = smfsb.models.lv(th).stepGillespie()
+    >>>     sf = jsmfsb.models.lv(th).stepGillespie()
     >>>     return sf(key, x, t, dt)
     >>> 
-    >>> mll = smfsb.pfMLLik(80, simX, 0, step, obsll, smfsb.data.LVnoise10)
+    >>> mll = jsmfsb.pfMLLik(80, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
     >>> k0 = jax.random.key(42)
     >>> mll(k0, jnp.array([1, 0.005, 0.6]))
     >>> mll(k0, jnp.array([2, 0.005, 0.6]))
