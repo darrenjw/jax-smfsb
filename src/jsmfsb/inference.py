@@ -79,7 +79,7 @@ def metropolisHastings(key, init, logLik, rprop,
     >>> k0 = jax.random.key(42)
     >>> k1, k2 = jax.random.split(k0)
     >>> data = jax.random.normal(k1, 250)*2 + 5
-    >>> llik = lambda x: jnp.sum(jsp.stats.norm.logpdf(data, x[0], x[1]))
+    >>> llik = lambda k, x: jnp.sum(jsp.stats.norm.logpdf(data, x[0], x[1]))
     >>> prop = lambda k, x: jax.random.normal(k, 2)*0.1 + x
     >>> jsmfsb.metropolisHastings(k2, jnp.array([1.0,1.0]), llik, prop)
     """
