@@ -17,6 +17,20 @@ def test_metropolisHastings():
                                    iters=1000, thin=2, verb=False)
     assert(out.shape == (1000, 2))
 
+    
+def test_pfmllik():
+    def obsll(x, t, y, th):
+        return jnp.sum(jsp.stats.norm.logpdf((y-x)/10))
+    def simX(k, t0, th):
+        k1, k2 = jax.random.split(k)
+        return jnp.array([jax.random.poisson(k1, 50),
+                          jax.random.poisson(k2, 100)]).astype(jnp.float32)
+    def step(k, x, t, dt, th):
+        sf = jsmfsb.models.lv(th).stepCLE()
+        return sf(k, x, t, dt)
+    mll = jsmfsb.pfMLLik(50, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
+    k = jax.random.key(42)
+    assert (mll(k, jnp.array([1, 0.005, 0.6])) > mll(k, jnp.array([2, 0.005, 0.6])))
 
 
 # eof

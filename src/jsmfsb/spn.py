@@ -688,6 +688,7 @@ class Spn:
                 x = diffuse(k1, x)
                 hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
                 dwt = jax.random.normal(k2, (v, m, n))*sdt
+                # TODO: this would be neater (and maybe faster) with "vmap"
                 stacked = jnp.stack((hr, dwt)) # (2, v, m, n)
                 x = x + jnp.apply_along_axis(react, 0, stacked.reshape(2*v, m, n))
                 x = rectify(x)
