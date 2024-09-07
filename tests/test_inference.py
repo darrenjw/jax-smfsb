@@ -33,5 +33,28 @@ def test_pfmllik():
     assert (mll(k, jnp.array([1, 0.005, 0.6])) > mll(k, jnp.array([2, 0.005, 0.6])))
 
 
+def test_abcRun():
+    k0 = jax.random.key(42)
+    k1, k2 = jax.random.split(k0)
+    data = jax.random.normal(k1, 250)*2 + 5
+    def rpr(k):
+      return jnp.exp(jax.random.uniform(k, 2, minval=-3, maxval=3))
+    def rmod(k, th):
+      return jax.random.normal(k, 250)*th[1] + th[0]
+    def sumStats(dat):
+      return jnp.array([jnp.mean(dat), jnp.std(dat)])
+    ssd = sumStats(data)
+    def dist(ss):
+      diff = ss - ssd
+      return jnp.sqrt(jnp.sum(diff*diff))
+    def rdis(k, th):
+      return dist(sumStats(rmod(k, th)))
+    p, d = jsmfsb.abcRun(k2, 100, rpr, rdis)
+    assert(len(p) == 100)
+    assert(len(d) == 100)
+
+
+
+    
 # eof
 

@@ -6,6 +6,8 @@ import jax.numpy as jnp
 from jax import jit
 
 
+# MCMC functions
+
 def metropolisHastings(key, init, logLik, rprop,
                        ldprop=lambda n, o: 1, ldprior=lambda x: 1,
                        iters=10000, thin=10, verb=True):
@@ -211,6 +213,85 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
         _, states = jax.lax.scan(advance, [0, xmat, 0.0], keys)
         return states[2][len(deltas)]
     return go
+
+
+# ABC functions
+
+def abcRun(key, n, rprior, rdist, verb=False):
+    """Run a set of simulations initialised with parameters sampled from a
+    given prior distribution, and compute statistics required for an ABC
+    analaysis
+
+    Run a set of simulations initialised with parameters sampled from
+    a given prior distribution, and compute statistics required for an
+    ABC analaysis. Typically used to calculate "distances" of
+    simulated synthetic data from observed data.
+    
+    Parameters
+    ----------
+    key: JAX random number key
+      Key to initialise the ABC simulation.
+    n : int
+      An integer representing the number of simulations to run.
+    rprior : function
+      A function with one argument, a JAX random key, generating
+      a single parameter (vector) from a prior distribution.
+    rdist : function
+      A function with two arguments, a JAX random key, and a
+      parameter (vector). It returns the required statistic of
+      interest. This will typically be computed by first using
+      the parameter to run a
+      forward model, then computing required summary statistics,
+      then computing a distance. See the example for details.
+    verb : boolean
+      Print progress information to console?
+    
+    Returns
+    -------
+    A tuple with first component a matrix of parameters (in rows)
+    and second component a vector of corresponding distances.
+ 
+    Examples
+    --------
+    >>> import jsmfsb
+    >>> import jax.numpy as jnp
+    >>> import jax.scipy as jsp
+    >>> k0 = jax.random.key(42)
+    >>> k1, k2 = jax.random.split(k0)
+    >>> data = jax.random.normal(k1, 250)*2 + 5
+    >>> def rpr(k):
+    >>>   return jnp.exp(jax.random.uniform(k, 2, minval=-3, maxval=3))
+    >>>
+    >>> def rmod(k, th):
+    >>>   return jax.random.normal(k, 250)*th[1] + th[0]
+    >>>
+    >>> def sumStats(dat):
+    >>>   return jnp.array([jnp.mean(dat), jnp.std(dat)])
+    >>>
+    >>> ssd = sumStats(data)
+    >>> def dist(ss):
+    >>>   diff = ss - ssd
+    >>>   return jnp.sqrt(jnp.sum(diff*diff))
+    >>>
+    >>> def rdis(k, th):
+    >>>   return dist(sumStats(rmod(k, th)))
+    >>>
+    >>> smfsb.abcRun(k2, 100, rpr, rdis)
+    """
+    @jit
+    def pair(k):
+        k1, k2 = jax.random.split(k)
+        p = rprior(k1)
+        d = rdist(k2, p)
+        if (verb):
+            print(p, d)
+        return (p, d)
+    keys = jax.random.split(key, n)
+    sims = jax.lax.map(pair, keys)
+    return sims
+
+
+# ABC-SMC functions
 
 
 
