@@ -217,7 +217,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
 
 # ABC functions
 
-def abcRun(key, n, rprior, rdist, verb=False):
+def abcRun(key, n, rprior, rdist, batch_size=None, verb=False):
     """Run a set of simulations initialised with parameters sampled from a
     given prior distribution, and compute statistics required for an ABC
     analaysis
@@ -243,8 +243,11 @@ def abcRun(key, n, rprior, rdist, verb=False):
       the parameter to run a
       forward model, then computing required summary statistics,
       then computing a distance. See the example for details.
+    batch_size: int
+      batch_size to use in call to jax.lax.map for parallelisation.
+      Defaults to None. 
     verb : boolean
-      Print progress information to console?
+      Print progress information to console? Defaults to False.
     
     Returns
     -------
@@ -287,7 +290,7 @@ def abcRun(key, n, rprior, rdist, verb=False):
             jax.debug.print("{p}, {d}", p=p, d=d)
         return (p, d)
     keys = jax.random.split(key, n)
-    sims = jax.lax.map(pair, keys)
+    sims = jax.lax.map(pair, keys, batch_size=batch_size)
     return sims
 
 

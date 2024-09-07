@@ -33,7 +33,7 @@ def rdis(k, th):
   return dist(sumStats(rmod(k, th)))
 
 k0 = jax.random.key(42)
-p, d = jsmfsb.abcRun(k0, 1000000, rpr, rdis, verb=True)
+p, d = jsmfsb.abcRun(k0, 1000000, rpr, rdis, batch_size=100000, verb=False)
 
 q = jnp.nanquantile(d, 0.01)
 prmat = jnp.vstack(p)

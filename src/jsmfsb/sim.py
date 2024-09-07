@@ -108,7 +108,7 @@ def simSample(key, n, x0, t0, deltat, stepFun):
     mat = vstep(keys)
     return mat
 
-
+# TODO: add a batch_size argument
 def simSampleMap(key, n, x0, t0, deltat, stepFun):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
