@@ -284,7 +284,7 @@ def abcRun(key, n, rprior, rdist, verb=False):
         p = rprior(k1)
         d = rdist(k2, p)
         if (verb):
-            print(p, d)
+            jax.debug.print("{p}, {d}", p=p, d=d)
         return (p, d)
     keys = jax.random.split(key, n)
     sims = jax.lax.map(pair, keys)
