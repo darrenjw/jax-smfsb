@@ -314,7 +314,7 @@ def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
     prop = jax.vmap(rperturb)(keys, prior)
     #print(prop.shape)
     keys2 = jax.random.split(k3, len(priorInd))
-    dist = jax.vmap(rdist)(keys2, prop)
+    dist = jax.vmap(rdist)(keys2, prop) # this is typically the slow step
     #print(dist.shape)
     qCut = jnp.nanquantile(dist, 1/factor)
     new = prop[dist < qCut,:]
@@ -426,7 +426,7 @@ def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
     key, k1 = jax.random.split(key)
     priorLW = jnp.log(jnp.zeros((N)) + 1/N)
     keys = jax.random.split(k1, N)
-    priorSample = jax.lax.map(rprior, keys) # TODO: batch size
+    priorSample = jax.lax.map(rprior, keys) # TODO: batch size?
     # TODO: worth turning this loop into a "scan"?
     for i in range(steps):
         key, k1 = jax.random.split(key)
