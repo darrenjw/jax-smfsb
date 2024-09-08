@@ -334,6 +334,120 @@ def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
     return new, nlw
 
 
+def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
+           factor=10, steps=15, verb=False, debug=False):
+    """Run an ABC-SMC algorithm for infering the parameters of a forward model
+
+    Run an ABC-SMC algorithm for infering the parameters of a forward
+    model. This sequential Monte Carlo algorithm often performs better
+    than simple rejection-ABC in practice.
+
+    Parameters
+    ----------
+    key : JAX random key
+      A key to initialise the simulation.
+    N : int
+      An integer representing the number of simulations to pass on
+      at each stage of the SMC algorithm. Note that the TOTAL
+      number of forward simulations required by the algorithm will
+      be (roughly) 'N*steps*factor'.
+    rprior : function
+      A function with a single argument, a JAX random key, which generates
+      a single parameter (vector) from the prior.
+    dprior : function
+      A function taking a parameter vector as argumnent and returning
+      the log of the prior density.
+    rdist : function
+      A function with two arguments: a JAX random key and a parameter vector.
+      It should return a scalar "distance" representing a measure of how
+      good the chosen parameter is. This will typically be computed
+      by first using the parameter to run a forward model, then
+      computing required summary statistics, then computing a
+      distance. See the example for details.
+    rperturb : function
+      A function with two arguments: a JAX random key and a parameter vector.
+      It should return a perturbed parameter from an appropriate kernel.
+    dperturb : function
+      A function which takes a pair of parameters as its first two
+      arguments (new first and old second), and returns the log of the density
+      associated with this perturbation kernel.
+    factor : int
+      At each step of the algorithm, 'N*factor' proposals are
+      generated and the best 'N' of these are weighted and passed
+      on to the next stage. Note that the effective sample size of
+      the parameters passed on to the next step may be (much)
+      smaller than 'N', since some of the particles may be assigned
+      small (or zero) weight. Defaults to 10.
+    steps : int
+      The number of steps of the ABC-SMC algorithm. Typically,
+      somewhere between 5 and 100 steps seems to be used in
+      practice. Defaults to 15.
+    verb : boolean
+      Boolean indicating whether some progress should be printed to
+      the console.
+    
+    Returns
+    -------
+    A matrix with rows representing samples from the approximate posterior
+    distribution.
+
+    Examples
+    --------
+    >>> import jsmfsb
+    >>> import jax
+    >>> import jax.numpy as jnp
+    >>> import jax.scipy as jsp
+    >>> k0 = jax.random.key(42)
+    >>> k1, k2 = jax.random.split(k0)
+    >>> data = jax.random.normal(k1, 250)*2 + 5
+    >>> def rpr(k):
+    >>>   return jnp.exp(jax.random.uniform(k, 2, minval=-3, maxval=3))
+    >>> 
+    >>> def rmod(k, th):
+    >>>   return jax.random.normal(k, 250)*jnp.exp(th[1]) + jnp.exp(th[0])
+    >>> 
+    >>> def sumStats(dat):
+    >>>   return jnp.array([jnp.mean(dat), jnp.std(dat)])
+    >>> 
+    >>> ssd = sumStats(data)
+    >>> def dist(ss):
+    >>>   diff = ss - ssd
+    >>>   return jnp.sqrt(jnp.sum(diff*diff))
+    >>> 
+    >>> def rdis(k, th):
+    >>>   return dist(sumStats(rmod(k, th)))
+    >>> 
+    >>> jsmfsb.abcSmc(k2, 100, rpr,
+    >>>                        lambda x: jnp.sum(jnp.log(((x<3)&(x>-3))/6)),
+    >>>                        rdis,
+    >>>                        lambda k,x: jax.random.normal(k)*0.1 + x,
+    >>>                        lambda x,y: jnp.sum(jsp.stats.norm.logpdf(y, x, 0.1)))
+    """
+    key, k1 = jax.random.split(key)
+    priorLW = jnp.log(jnp.zeros((N)) + 1/N)
+    keys = jax.random.split(k1, N)
+    priorSample = jax.lax.map(rprior, keys) # TODO: batch size
+    # TODO: worth turning this loop into a "scan"?
+    for i in range(steps):
+        key, k1 = jax.random.split(key)
+        if (verb):
+            print(steps-i, end=' ', flush=True)
+        priorSample, priorLW = abcSmcStep(k1, dprior, priorSample, priorLW,
+                                          rdist, rperturb, dperturb, factor)
+        if (debug):
+            print(priorSample.shape)
+            print(priorLW.shape)
+    if (verb):
+        print("Done.")
+    if (debug):
+        print(priorSample.shape)
+        print(priorLW.shape)
+    #print(priorLW)
+    ind = jax.random.choice(key, priorLW.shape[0], shape=(N,), p = jnp.exp(priorLW))
+    #print(ind)
+    return priorSample[ind,:]
+
+
 
 # eof
 
