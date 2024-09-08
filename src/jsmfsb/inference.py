@@ -305,17 +305,12 @@ def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
     n = priorSample.shape[0]
     mx = jnp.max(priorLW)
     rw = jnp.exp(priorLW - mx)
-    #print(priorSample.shape)
-    #print(len(rw))
     priorInd = jax.random.choice(k1, n, shape=(n*factor,), p=rw/jnp.sum(rw))
     prior = priorSample[priorInd,:]
-    #print(prior.shape)
     keys = jax.random.split(k2, len(priorInd))
     prop = jax.vmap(rperturb)(keys, prior)
-    #print(prop.shape)
     keys2 = jax.random.split(k3, len(priorInd))
     dist = jax.vmap(rdist)(keys2, prop) # this is typically the slow step
-    #print(dist.shape)
     qCut = jnp.nanquantile(dist, 1/factor)
     new = prop[dist < qCut,:]
     def logWeight(th):
@@ -328,9 +323,6 @@ def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
     mx = jnp.max(lw)
     rw = jnp.exp(lw - mx)
     nlw = jnp.log(rw/jnp.sum(rw))
-    #print(f"new: {new.shape}")
-    #print(f"nlw: {nlw.shape}")
-    #print(nlw)
     return new, nlw
 
 
@@ -426,8 +418,8 @@ def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
     key, k1 = jax.random.split(key)
     priorLW = jnp.log(jnp.zeros((N)) + 1/N)
     keys = jax.random.split(k1, N)
-    priorSample = jax.lax.map(rprior, keys) # TODO: batch size?
-    # TODO: worth turning this loop into a "scan"?
+    priorSample = jax.lax.map(rprior, keys)
+    # TODO: worth turning this loop into a "scan"? Maybe not.
     for i in range(steps):
         key, k1 = jax.random.split(key)
         if (verb):
@@ -442,9 +434,8 @@ def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
     if (debug):
         print(priorSample.shape)
         print(priorLW.shape)
-    #print(priorLW)
-    ind = jax.random.choice(key, priorLW.shape[0], shape=(N,), p = jnp.exp(priorLW))
-    #print(ind)
+    ind = jax.random.choice(key, priorLW.shape[0],
+                            shape=(N,), p = jnp.exp(priorLW))
     return priorSample[ind,:]
 
 
