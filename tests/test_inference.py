@@ -54,7 +54,38 @@ def test_abcRun():
     assert(len(d) == 100)
 
 
+def test_abcsmcstep():
+    k0 = jax.random.key(42)
+    k1, k2 = jax.random.split(k0)
+    data = jax.random.normal(k1, 250)*2 + 5
+    def rpr(k):
+      return jnp.exp(jax.random.uniform(k, 2, minval=-3, maxval=3))
+    def rmod(k, th):
+      return jax.random.normal(k, 250)*jnp.exp(th[1]) + jnp.exp(th[0])
+    def sumStats(dat):
+      return jnp.array([jnp.mean(dat), jnp.std(dat)])
+    ssd = sumStats(data)
+    def dist(ss):
+      diff = ss - ssd
+      return jnp.sqrt(jnp.sum(diff*diff))
+    def rdis(k, th):
+      return dist(sumStats(rmod(k, th)))
+    N = 100
+    keys = jax.random.split(k2, N)
+    samples = jax.lax.map(rpr, keys)
+    th, lw = jsmfsb.abcSmcStep(k0,
+                              lambda x: jnp.log(jnp.sum(((x<3)&(x>-3))/6)),
+                              samples,
+                              jnp.zeros(N) + jnp.log(1/N),
+                              rdis,
+                              lambda k, x: jax.random.normal(k)*0.1 + x,
+                              lambda x, y: jnp.sum(jsp.stats.norm.logpdf(y,x,0.1)),
+                              10)
+    assert(th.shape == (N, 2))
+    assert(len(lw) == N)
 
+
+    
     
 # eof
 

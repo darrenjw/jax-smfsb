@@ -199,8 +199,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
             keys = jax.random.split(k1, n)
             def prop(k, x):
                 return stepFun(k, x, times[i], deltas[i], th)
-            propv = jax.vmap(prop)
-            xmat = propv(keys, xmat)
+            xmat = jax.vmap(prop)(keys, xmat)
             lw = jnp.apply_along_axis(lambda x: dataLLik(
                 x, times[i+1], obs[i,], th), 1, xmat)
             m = jnp.max(lw)
@@ -296,6 +295,43 @@ def abcRun(key, n, rprior, rdist, batch_size=None, verb=False):
 
 # ABC-SMC functions
 
+def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
+               dperturb, factor):
+    """Carry out one step of an ABC-SMC algorithm
+
+    Not meant to be directly called by users. See abcSmc.
+    """
+    k1, k2, k3 = jax.random.split(key, 3)
+    n = priorSample.shape[0]
+    mx = jnp.max(priorLW)
+    rw = jnp.exp(priorLW - mx)
+    #print(priorSample.shape)
+    #print(len(rw))
+    priorInd = jax.random.choice(k1, n, shape=(n*factor,), p=rw/jnp.sum(rw))
+    prior = priorSample[priorInd,:]
+    #print(prior.shape)
+    keys = jax.random.split(k2, len(priorInd))
+    prop = jax.vmap(rperturb)(keys, prior)
+    #print(prop.shape)
+    keys2 = jax.random.split(k3, len(priorInd))
+    dist = jax.vmap(rdist)(keys2, prop)
+    #print(dist.shape)
+    qCut = jnp.nanquantile(dist, 1/factor)
+    new = prop[dist < qCut,:]
+    def logWeight(th):
+        terms = priorLW + jnp.apply_along_axis(lambda x: dperturb(th, x),
+                                              1, priorSample)
+        mt = jnp.max(terms)
+        denom = mt + jnp.log(jnp.sum(jnp.exp(terms-mt)))
+        return dprior(th) - denom
+    lw = jnp.apply_along_axis(logWeight, 1, new)
+    mx = jnp.max(lw)
+    rw = jnp.exp(lw - mx)
+    nlw = jnp.log(rw/jnp.sum(rw))
+    #print(f"new: {new.shape}")
+    #print(f"nlw: {nlw.shape}")
+    #print(nlw)
+    return new, nlw
 
 
 
