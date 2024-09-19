@@ -42,7 +42,9 @@ For further information, see the [demo directory](https://github.com/darrenjw/ja
 
 You can view this package on [GitHub](https://github.com/darrenjw/jax-smfsb) or [PyPI](https://pypi.org/project/jsmfsb/).
 
+### Contributing
 
+If you have problems with this software, please start an [Issue](https://github.com/darrenjw/jax-smfsb/issues) or a [Discussion](https://github.com/darrenjw/jax-smfsb/discussions). Pull requests containing bug fixes are welcome.
 
 
 **Copyright (C) 2024 Darren J Wilkinson**
