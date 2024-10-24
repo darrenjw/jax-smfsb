@@ -19,7 +19,7 @@ authors:
     affiliation: 1
 affiliations:
   - name: Department of Mathematical Sciences, University of Durham, UK
-  - index: 1
+    index: 1
 date: 19 September 2024
 bibliography: paper.bib
 ---
@@ -30,7 +30,7 @@ Many biological processes, and especially molecular biochemical processes, exhib
 
 # Statement of Need
 
-Although there exist many tools for modelling biological network dynamics using deterministic approaches, typically based on ordinary differential equations (ODEs), there are relatively few flexible software libraries for modelling and simulation of stochastic biochemical networks. There are even fewer libraries for principled (fully Bayesian) inference for the parameters of such networks using data.
+Although there exist many tools for modelling biological network dynamics using deterministic approaches, typically based on ordinary differential equations (ODEs), there are relatively few flexible software libraries for modelling and simulation of stochastic biochemical networks, although *libRoadRunner* [@Welsh2022] and *SBSCL* [@Panch2021] are notable examples. There are even fewer libraries for principled (fully Bayesian) inference for the parameters of such networks using data.
 
 In addition to describing the mathematical framework for stochastic modelling, simulation, and inference, @Wilkinson2018 also describes a software implementation of all of the algorithms. The language chosen to illustrate the implementation was R [@R], and the library is available as the package `smfsb` [@Wilkinson2024]. While this library is of significant pedagogical value, the overheads of dynamic interpreted languages such as R make it unsuitable for the development of high-performance codes needed for non-trivial research problems. An implementation in the compiled strongly-typed functional language Scala [@Odersky2004], `scala-smfsb` [@Wilkinson2019] partially addresses this issue, but the lack of systems biology students and researchers familiar with Scala has limited the impact of this library. More recently, a Python [@Python] port of the library, `python-smfsb` [@Wilkinson2023] has been developed, utilising the Python libraries `numpy` [@NumPy] and `scipy` [@SciPy]. This is of significant pedagogical value, since Python has become a more popular programming language for systems biology modelling than R. Nevertheless, the performance of this library is similar to that of the R library, inadequate for serious research problems.
 
