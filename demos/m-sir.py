@@ -15,7 +15,7 @@ step = sirmod.step_gillespie()
 k0 = jax.random.key(42)
 print(step(k0, sirmod.m, 0, 30))
 
-out = jsmfsb.simTs(k0, sirmod.m, 0, 100, 0.1, step)
+out = jsmfsb.sim_time_series(k0, sirmod.m, 0, 100, 0.1, step)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()

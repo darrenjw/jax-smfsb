@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# abcRun.py
+# abc_run.py
 
 import jsmfsb
 import jax
@@ -29,7 +29,7 @@ def dist(ss):
 def rdis(k, th):
   return dist(sumStats(rmod(k, th)))
 
-p, d = jsmfsb.abcRun(k2, 1000000, rpr, rdis)
+p, d = jsmfsb.abc_run(k2, 1000000, rpr, rdis)
 
 q = jnp.quantile(d, 0.01)
 prmat = jnp.vstack(p)
@@ -44,7 +44,7 @@ axes[1, 0].plot(range(its), postmat[:,0], linewidth=0.1)
 axes[1, 1].plot(range(its), postmat[:,1], linewidth=0.1)
 axes[2, 0].hist(postmat[:,0], bins=30)
 axes[2, 1].hist(postmat[:,1], bins=30)
-fig.savefig("abcRun.pdf")
+fig.savefig("abc_run.pdf")
 
 
 # eof

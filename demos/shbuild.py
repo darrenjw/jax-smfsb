@@ -31,10 +31,10 @@ seirSH = """
  gamma*I : gamma=0.5
 """
 
-seir = jsmfsb.sh2Spn(seirSH)
+seir = jsmfsb.shorthand_to_spn(seirSH)
 stepSeir = seir.step_gillespie()
 k0 = jax.random.key(42)
-out = jsmfsb.simTs(k0, seir.m, 0, 40, 0.05, stepSeir)
+out = jsmfsb.sim_time_series(k0, seir.m, 0, 40, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
@@ -44,8 +44,8 @@ for i in range(4):
 axis.legend(seir.n)
 fig.savefig("shbuild.pdf")
 
-# simSample
-out = jsmfsb.simSample(k0, 10000, seir.m, 0, 10, stepSeir)
+# sim_sample
+out = jsmfsb.sim_sample(k0, 10000, seir.m, 0, 10, stepSeir)
 import scipy as sp
 print(sp.stats.describe(out))
 fig, axes = plt.subplots(4,1)

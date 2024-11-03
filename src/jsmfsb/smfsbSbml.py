@@ -9,7 +9,7 @@ import jax.numpy as jnp
 from sbmlsh import mod2sbml
 
 
-def mod2Spn(filename, verb=False):
+def mod_to_spn(filename, verb=False):
     """Convert an SBML-shorthand model into a Spn object
 
     Read a file containing a model in SBML-shorthand and convert into
@@ -43,11 +43,11 @@ def mod2Spn(filename, verb=False):
     if (m == None):
         sys.stderr.write("Error: can't extract SBML model\n")
         sys.exit(1)
-    return(model2Spn(m, verb))
+    return(model_to_spn(m, verb))
 
 
 
-def sh2Spn(shString, verb=False):
+def shorthand_to_spn(shString, verb=False):
     """Convert an SBML-shorthand model string into a Spn object
 
     Parse a string containing a model in SBML-shorthand and convert into
@@ -79,11 +79,11 @@ def sh2Spn(shString, verb=False):
     if (m == None):
         sys.stderr.write("Error: couldn't parse the shorthand string\n")
         sys.exit(1)
-    return(model2Spn(m, verb))
+    return(model_to_spn(m, verb))
 
 
 
-def file2Spn(filename, verb=False):
+def file_to_spn(filename, verb=False):
     """Convert an SBML model into a Spn object
 
     Read a file containing a model in SBML and convert into
@@ -111,11 +111,11 @@ def file2Spn(filename, verb=False):
     if (m == None):
         sys.stderr.write("Can't parse SBML file: "+filename+"\n")
         sys.exit(1)
-    return(model2Spn(m, verb))
+    return(model_to_spn(m, verb))
 
 
 
-def model2Spn(m, verb=False):
+def model_to_spn(m, verb=False):
     """Convert a libSBML model into a Spn object
 
     Convert a libSBML model into a Spn object for simulation and analysis.
@@ -137,7 +137,7 @@ def model2Spn(m, verb=False):
     >>> import libsbml
     >>> d = libsbml.readSBML("myModel.xml")
     >>> m = d.getModel()
-    >>> myMod = smfsb.model2Spn(m)
+    >>> myMod = smfsb.model_to_spn(m)
     >>> step = myMod.step_gillespie()
     """
     # Species and initial amounts

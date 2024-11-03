@@ -10,7 +10,7 @@ import jax.scipy as jsp
 
 print("ABC with calibrated summary stats")
 
-data = jsmfsb.data.LVperfect[:,1:3]
+data = jsmfsb.data.lv_perfect[:,1:3]
 
 def rpr(k):
   k1, k2, k3 = jax.random.split(k, 3)
@@ -19,7 +19,7 @@ def rpr(k):
                           jax.random.uniform(k3, minval=-4, maxval=2)]))
 
 def rmod(k, th):
-  return jsmfsb.simTs(k, jnp.array([50.0, 100.0]), 0, 30, 2,
+  return jsmfsb.sim_time_series(k, jnp.array([50.0, 100.0]), 0, 30, 2,
                      jsmfsb.models.lv(th).step_cle(0.1))
 
 def ss1d(vec):
@@ -43,7 +43,7 @@ print("Pilot run")
 k0 = jax.random.key(42)
 k1, k2 = jax.random.split(k0)
 
-p, d = jsmfsb.abcRun(k1, 100000, rpr, lambda k,th: ssi(rmod(k,th)), batch_size=10000)
+p, d = jsmfsb.abc_run(k1, 100000, rpr, lambda k,th: ssi(rmod(k,th)), batch_size=10000)
 prmat = jnp.vstack(p)
 dmat = jnp.vstack(d)
 print(prmat.shape)
@@ -67,7 +67,7 @@ def dist(ss):
 def rdis(k, th):
   return dist(sumStats(rmod(k, th)))
 
-p, d = jsmfsb.abcRun(k2, 1000000, rpr, rdis, batch_size=100000, verb=False)
+p, d = jsmfsb.abc_run(k2, 1000000, rpr, rdis, batch_size=100000, verb=False)
 
 q = jnp.nanquantile(d, 0.01)
 prmat = jnp.vstack(p)

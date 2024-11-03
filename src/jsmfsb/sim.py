@@ -8,7 +8,7 @@ import jax
 from jax import jit
 import jax.lax as jl
 
-def simTs(key, x0, t0, tt, dt, stepFun):
+def sim_time_series(key, x0, t0, tt, dt, stepFun):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -45,7 +45,7 @@ def simTs(key, x0, t0, tt, dt, stepFun):
     >>> import jsmfsb.models
     >>> lv = jsmfsb.models.lv()
     >>> stepLv = lv.step_gillespie()
-    >>> jsmfsb.simTs(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
+    >>> jsmfsb.sim_time_series(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
     """
     n = int((tt-t0) // dt) + 1
     keys = jax.random.split(key, n)
@@ -59,7 +59,7 @@ def simTs(key, x0, t0, tt, dt, stepFun):
     return mat
 
 
-def simSample(key, n, x0, t0, deltat, stepFun, batch_size=None):
+def sim_sample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
     advancing the state of the model
@@ -98,7 +98,7 @@ def simSample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     >>> import jsmfsb.models
     >>> lv = jsmfsb.models.lv()
     >>> stepLv = lv.step_gillespie()
-    >>> jsmfsb.simSample(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
+    >>> jsmfsb.sim_sample(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
     """
     u = len(x0)
     keys = jax.random.split(key, n)

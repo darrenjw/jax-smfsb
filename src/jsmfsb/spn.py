@@ -51,7 +51,7 @@ class Spn:
 	      lambda x, t: jnp.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
 	      [197, 3, 0])
         >>> stepSir = sir.step_gillespie()
-        >>> jsmfsb.simSample(jax.random.key(42), 10, sir.m, 0, 20, stepSir)
+        >>> jsmfsb.sim_sample(jax.random.key(42), 10, sir.m, 0, 20, stepSir)
         """
         self.n = n # species names
         self.t = t # reaction names
@@ -77,7 +77,7 @@ class Spn:
         This method returns a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `simTs`) for simulating realisations of SPN models.
+        `sim_time_series`) for simulating realisations of SPN models.
 
         Parameters
         ----------
@@ -137,7 +137,7 @@ class Spn:
         This method returns a function for advancing the state of an SPN
         model using a simple approximate Poisson time stepping method. The
         resulting function (closure) can be used in conjunction with other
-        functions (such as ‘simTs’) for simulating realisations of SPN
+        functions (such as ‘sim_time_series’) for simulating realisations of SPN
         models.
 
         Parameters
@@ -196,7 +196,7 @@ class Spn:
         This method returns a function for advancing the state of an SPN
         model using a simple continuous deterministic Euler integration
         method. The resulting function (closure) can be used in
-        conjunction with other functions (such as ‘simTs’) for simulating
+        conjunction with other functions (such as ‘sim_time_series’) for simulating
         realisations of SPN models.
 
         Parameters
@@ -252,7 +252,7 @@ class Spn:
         model using a simple Euler-Maruyama integration method
         method for the chemical Langevin equation form of the model.The 
         resulting function (closure) can be used in
-        conjunction with other functions (such as `simTs`) for simulating
+        conjunction with other functions (such as `sim_time_series`) for simulating
         realisations of SPN models.
 
         Parameters
@@ -304,14 +304,14 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def step_gillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_1d(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `simTs1D`) for simulating realisations of SPN models in space and
+        `sim_time_series_1d`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -347,7 +347,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv1d = lv.step_gillespie1D(jnp.array([0.6, 0.6]))
+        >>> stepLv1d = lv.step_gillespie_1d(jnp.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2,N))
         >>> x0 = x0.at[:,int(N/2)].set(lv.m)
@@ -402,14 +402,14 @@ class Spn:
         return step
 
     
-    def step_gillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_2d(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
         This method creates a function for advancing the state of an SPN
         model using the Gillespie algorithm. The resulting function
         (closure) can be used in conjunction with other functions (such as
-        `simTs2D`) for simulating realisations of SPN models in space and
+        `sim_time_series_2d`) for simulating realisations of SPN models in space and
         time.
 
         Parameters
@@ -445,7 +445,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv2d = lv.step_gillespie2D(jnp.array([0.6, 0.6]))
+        >>> stepLv2d = lv.step_gillespie_2d(jnp.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2, N, N))
         >>> x0 = x0.at[:, int(N/2), int(N/2)].set(lv.m)
@@ -509,14 +509,14 @@ class Spn:
         return step
 
     
-    def step_cle1D(self, d, dt = 0.01):
+    def step_cle_1d(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 1D regular grid
         
         This method creates a function for advancing the state of an SPN
         model using a simple Euler-Maruyama discretisation of the CLE on a
         1D regular grid. The resulting function (closure) can be used in
-        conjunction with other functions (such as `simTs1D`) for
+        conjunction with other functions (such as `sim_time_series_1d`) for
         simulating realisations of SPN models in space and time.
 
         Parameters
@@ -550,7 +550,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv1d = lv.step_cle1D(jnp.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_cle_1d(jnp.array([0.6,0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2,N))
         >>> x0 = x0.at[:,int(N/2)].set(lv.m)
@@ -596,14 +596,14 @@ class Spn:
         return step
 
     
-    def step_cle2D(self, d, dt = 0.01):
+    def step_cle_2d(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 2D regular grid
         
         This method creates a function for advancing the state of an SPN
         model using a simple Euler-Maruyama discretisation of the CLE on a
         2D regular grid. The resulting function (closure) can be used in
-        conjunction with other functions (such as `simTs2D`) for
+        conjunction with other functions (such as `sim_time_series_2d`) for
         simulating realisations of SPN models in space and time.
 
         Parameters
@@ -636,7 +636,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv2d = lv.step_cle2D(jnp.array([0.6,0.6]))
+        >>> stepLv2d = lv.step_cle_2d(jnp.array([0.6,0.6]))
         >>> M = 15
         >>> N = 20
         >>> x0 = jnp.zeros((2,M,N))

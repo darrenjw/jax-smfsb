@@ -19,7 +19,7 @@ print(step(k0, lvmod.m, 0, 30))
 stepC = lvmod.step_cle(0.01)
 print(stepC(k0, lvmod.m, 0, 30))
 
-out = jsmfsb.simSample(k0, 10000, lvmod.m, 0, 30, stepC)
+out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 30, stepC)
 out = jnp.where(out > 1000, 1000, out)
 import scipy as sp
 print(sp.stats.describe(out))

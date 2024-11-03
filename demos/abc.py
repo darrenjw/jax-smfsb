@@ -9,7 +9,7 @@ import jax.scipy as jsp
 
 print("ABC")
 
-data = jsmfsb.data.LVperfect[:,1:3]
+data = jsmfsb.data.lv_perfect[:,1:3]
 
 def rpr(k):
   k1, k2, k3 = jax.random.split(k, 3)
@@ -18,7 +18,7 @@ def rpr(k):
                           jax.random.uniform(k3, minval=-4, maxval=2)]))
 
 def rmod(k, th):
-  return jsmfsb.simTs(k, jnp.array([50.0, 100.0]), 0, 30, 2,
+  return jsmfsb.sim_time_series(k, jnp.array([50.0, 100.0]), 0, 30, 2,
                      jsmfsb.models.lv(th).step_cle(0.1))
 
 def sumStats(dat):
@@ -34,7 +34,7 @@ def rdis(k, th):
   return dist(sumStats(rmod(k, th)))
 
 k0 = jax.random.key(42)
-p, d = jsmfsb.abcRun(k0, 1000000, rpr, rdis, batch_size=100000, verb=False)
+p, d = jsmfsb.abc_run(k0, 1000000, rpr, rdis, batch_size=100000, verb=False)
 
 q = jnp.nanquantile(d, 0.01)
 prmat = jnp.vstack(p)

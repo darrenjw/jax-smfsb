@@ -5,7 +5,7 @@ import jax.numpy as jnp
 
 
 # time, prey, predator
-LVperfect = jnp.array([
+lv_perfect = jnp.array([
     [   0,  50, 100],
     [   2, 145,  93],
     [   4, 265, 248],
@@ -26,7 +26,7 @@ LVperfect = jnp.array([
 
 
 # time, prey, predator
-LVnoise10 = jnp.array([
+lv_noise_10 = jnp.array([
     [   0,  34.19903,  98.11945],
     [   2, 156.54757,  86.52563],
     [   4, 267.77267, 260.94433],
@@ -47,7 +47,7 @@ LVnoise10 = jnp.array([
 
 
 # time, prey
-LVpreyNoise10 = LVnoise10[:, [0,1]]
+lv_prey_noise_10 = lv_noise_10[:, [0,1]]
 
 
 # eof

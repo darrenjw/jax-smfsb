@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# pfMLLik.py
+# pf_marginal_ll.py
 
 import jsmfsb
 import jax
@@ -17,7 +17,7 @@ def step(k, x, t, dt, th):
     sf = jsmfsb.models.lv(th).step_cle(0.1)
     #sf = jsmfsb.models.lv(th).step_gillespie()
     return sf(k, x, t, dt)
-mll = jsmfsb.pfMLLik(100, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
+mll = jsmfsb.pf_marginal_ll(100, simX, 0, step, obsll, jsmfsb.data.lv_noise_10)
 
 k = jax.random.split(jax.random.key(42), 5)
 print(mll(k[0], jnp.array([1, 0.005, 0.6])))

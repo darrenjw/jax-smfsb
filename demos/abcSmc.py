@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# abcSmc.py
+# abc_smc.py
 
 import jsmfsb
 import jax
@@ -8,7 +8,7 @@ import jax.scipy as jsp
 
 print("ABC-SMC")
 
-data = jsmfsb.data.LVperfect[:,1:3]
+data = jsmfsb.data.lv_perfect[:,1:3]
 
 # Very vague prior
 
@@ -44,7 +44,7 @@ def dpr(th):
 # Model
 
 def rmod(k, th):
-  return jsmfsb.simTs(k, jnp.array([50.0, 100]), 0, 30, 2,
+  return jsmfsb.sim_time_series(k, jnp.array([50.0, 100]), 0, 30, 2,
                      jsmfsb.models.lv(jnp.exp(th)).step_cle(0.1))
 
 print("Pilot run...")
@@ -64,7 +64,7 @@ def ssi(ts):
                           jnp.array([jnp.corrcoef(ts[:,0], ts[:,1])[0,1]])))
 
 key = jax.random.key(42)
-p, d = jsmfsb.abcRun(key, 20000, rpr, lambda k,th: ssi(rmod(k,th)), verb=False)
+p, d = jsmfsb.abc_run(key, 20000, rpr, lambda k,th: ssi(rmod(k,th)), verb=False)
 prmat = jnp.vstack(p)
 dmat = jnp.vstack(d)
 print(prmat.shape)
@@ -93,7 +93,7 @@ def rper(k,th):
 def dper(ne, ol):
   return jnp.sum(jsp.stats.norm.logpdf(ne, ol, 0.5))
 
-postmat = jsmfsb.abcSmc(key, 10000, rpr, dpr, rdis, rper, dper,
+postmat = jsmfsb.abc_smc(key, 10000, rpr, dpr, rdis, rper, dper,
                         factor=5, steps=8, verb=True)
 
 its, var = postmat.shape
@@ -107,7 +107,7 @@ axes[0, 2].scatter(postmat[:,1], postmat[:,2], s=0.5)
 axes[1, 0].hist(postmat[:,0], bins=30)
 axes[1, 1].hist(postmat[:,1], bins=30)
 axes[1, 2].hist(postmat[:,2], bins=30)
-fig.savefig("abcSmc.pdf")
+fig.savefig("abc_smc.pdf")
 
 print("All done.")
 

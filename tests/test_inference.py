@@ -8,12 +8,12 @@ import jax.scipy as jsp
 
 
 
-def test_metropolisHastings():
+def test_metropolis_hastings():
     key = jax.random.key(42)
     data = jax.random.normal(key, 250)*2 + 5
     llik = lambda k,x: jnp.sum(jsp.stats.norm.logpdf(data, x[0], x[1]))
     prop = lambda k,x: jax.random.normal(k, 2)*0.1 + x
-    out = jsmfsb.metropolisHastings(key, jnp.array([1.0,1.0]), llik, prop,
+    out = jsmfsb.metropolis_hastings(key, jnp.array([1.0,1.0]), llik, prop,
                                    iters=1000, thin=2, verb=False)
     assert(out.shape == (1000, 2))
 
@@ -28,12 +28,12 @@ def test_pfmllik():
     def step(k, x, t, dt, th):
         sf = jsmfsb.models.lv(th).step_cle()
         return sf(k, x, t, dt)
-    mll = jsmfsb.pfMLLik(50, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
+    mll = jsmfsb.pf_marginal_ll(50, simX, 0, step, obsll, jsmfsb.data.lv_noise_10)
     k = jax.random.key(42)
     assert (mll(k, jnp.array([1, 0.005, 0.6])) > mll(k, jnp.array([2, 0.005, 0.6])))
 
 
-def test_abcRun():
+def test_abc_run():
     k0 = jax.random.key(42)
     k1, k2 = jax.random.split(k0)
     data = jax.random.normal(k1, 250)*2 + 5
@@ -49,7 +49,7 @@ def test_abcRun():
       return jnp.sqrt(jnp.sum(diff*diff))
     def rdis(k, th):
       return dist(sumStats(rmod(k, th)))
-    p, d = jsmfsb.abcRun(k2, 100, rpr, rdis)
+    p, d = jsmfsb.abc_run(k2, 100, rpr, rdis)
     assert(len(p) == 100)
     assert(len(d) == 100)
 
@@ -73,7 +73,7 @@ def test_abcsmcstep():
     N = 100
     keys = jax.random.split(k2, N)
     samples = jax.lax.map(rpr, keys)
-    th, lw = jsmfsb.abcSmcStep(k0,
+    th, lw = jsmfsb.abc_smc_step(k0,
                               lambda x: jnp.log(jnp.sum(((x<3)&(x>-3))/6)),
                               samples,
                               jnp.zeros(N) + jnp.log(1/N),
@@ -102,7 +102,7 @@ def test_abcsmc():
     def rdis(k,th):
       return dist(sumStats(rmod(k,th)))
     N = 100
-    post = jsmfsb.abcSmc(k2, N, rpr, lambda x: jnp.sum(jnp.log(((x<3)&(x>-3))/6)),
+    post = jsmfsb.abc_smc(k2, N, rpr, lambda x: jnp.sum(jnp.log(((x<3)&(x>-3))/6)),
                               rdis, lambda k,x: jax.random.normal(k)*0.1 + x,
                               lambda x,y: jnp.sum(jsp.stats.norm.logpdf(y, x, 0.1)))
     assert(post.shape == (N, 2))

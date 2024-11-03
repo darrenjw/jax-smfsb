@@ -6,14 +6,14 @@ from jax import jit
 import jax.numpy as jnp
 import jax.lax as jl
 
-def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
+def sim_time_series_1d(key, x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
     This function simulates single realisation of a model on a 1D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `step_gillespie1D`.
+    `step_gillespie_1d`.
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `step_gillespie1D`.
+      such as produced by `step_gillespie_1d`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
@@ -48,13 +48,13 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     >>> import jax
     >>> import jax.numpy as jnp
     >>> lv = jsmfsb.models.lv()
-    >>> stepLv1d = lv.step_gillespie1D(jnp.array([0.6,0.6]))
+    >>> stepLv1d = lv.step_gillespie_1d(jnp.array([0.6,0.6]))
     >>> N = 10
     >>> T = 5
     >>> x0 = jnp.zeros((2,N))
     >>> x0 = x0.at[:,int(N/2)].set(lv.m)
     >>> k0 = jax.random.key(42)
-    >>> jsmfsb.simTs1D(k0, x0, 0, T, 1, stepLv1d, True)
+    >>> jsmfsb.sim_time_series_1d(k0, x0, 0, T, 1, stepLv1d, True)
     """
     N = int((tt - t0)//dt + 1)
     u, n = x0.shape
@@ -71,14 +71,14 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     return jnp.moveaxis(arr, 0, 2)
     
 
-def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
+def sim_time_series_2d(key, x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
     This function simulates single realisation of a model on a 2D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `step_gillespie2D`.
+    `step_gillespie_2d`.
 
     Parameters
     ----------
@@ -98,7 +98,7 @@ def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `step_gillespie2D`.
+      such as produced by `step_gillespie_2d`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
@@ -113,14 +113,14 @@ def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
     >>> import jax
     >>> import jax.numpy as jnp
     >>> lv = jsmfsb.models.lv()
-    >>> stepLv2d = lv.step_gillespie2D(jnp.array([0.6,0.6]))
+    >>> stepLv2d = lv.step_gillespie_2d(jnp.array([0.6,0.6]))
     >>> M = 10
     >>> N = 15
     >>> T = 5
     >>> x0 = jnp.zeros((2,M,N))
     >>> x0 = x0.at[:,int(M/2),int(N/2)].set(lv.m)
     >>> k0 = jax.random.key(42)
-    >>> jsmfsb.simTs2D(k0, x0, 0, T, 1, stepLv2d, True)
+    >>> jsmfsb.sim_time_series_2d(k0, x0, 0, T, 1, stepLv2d, True)
     """
     N = int((tt - t0)//dt + 1)
     u, m, n = x0.shape

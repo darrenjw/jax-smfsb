@@ -27,7 +27,7 @@ def bd(th=[1, 1.1]):
     >>> bd = jsmfsb.models.bd()
     >>> step = bd.step_gillespie()
     >>> k = jax.random.key(42)
-    >>> jsmfsb.simTs(k, bd.m, 0, 50, 0.1, step)
+    >>> jsmfsb.sim_time_series(k, bd.m, 0, 50, 0.1, step)
     """
     return Spn(["X"], ["Birth","Death"], [[1],[1]], [[2],[0]],
                lambda x, t: jnp.array([th[0]*x[0], th[1]*x[0]]),
@@ -55,7 +55,7 @@ def dimer(th=[0.00166, 0.2]):
     >>> dimer = jsmfsb.models.dimer()
     >>> step = dimer.step_gillespie()
     >>> k = jax.random.key(42)
-    >>> jsmfsb.simTs(k, dimer.m, 0, 50, 0.1, step)
+    >>> jsmfsb.sim_time_series(k, dimer.m, 0, 50, 0.1, step)
     """
     return Spn(["P", "P2"], ["Dim", "Diss"], [[2,0],[0,1]], [[0,1],[2,0]],
                lambda x, t: jnp.array([th[0]*x[0]*(x[0]-1)/2, th[1]*x[1]]),
@@ -84,7 +84,7 @@ def id(th=[1, 0.1]):
     >>> id = jsmfsb.models.id()
     >>> step = id.step_gillespie()
     >>> k = jax.random.key(42)
-    >>> jsmfsb.simTs(k, id.m, 0, 50, 0.1, step)
+    >>> jsmfsb.sim_time_series(k, id.m, 0, 50, 0.1, step)
     """
     return Spn(["X"], ["Immigration", "Death"], [[0],[1]], [[1],[0]],
                lambda x, t: jnp.array([th[0], th[1]*x[0]]),
@@ -114,7 +114,7 @@ def lv(th=[1, 0.005, 0.6]):
     >>> lv = jsmfsb.models.lv()
     >>> step = lv.step_gillespie()
     >>> k = jax.random.key(42)
-    >>> jsmfsb.simTs(k, lv.m, 0, 50, 0.1, step)
+    >>> jsmfsb.sim_time_series(k, lv.m, 0, 50, 0.1, step)
     """
     return Spn(["Prey", "Predator"], ["Prey rep", "Inter", "Pred death"],
                [[1,0],[1,1],[0,1]], [[2,0],[0,2],[0,0]],
@@ -144,7 +144,7 @@ def mm(th=[0.00166, 1e-4, 0.1]):
     >>> mm = jsmfsb.models.mm()
     >>> step = mm.step_gillespie()
     >>> k = jax.random.key(42)
-    >>> jsmfsb.simTs(k, mm.m, 0, 50, 0.1, step)
+    >>> jsmfsb.sim_time_series(k, mm.m, 0, 50, 0.1, step)
     """
     return Spn(["S", "E", "SE", "P"], ["Bind", "Unbind", "Produce"],
                [[1,1,0,0],[0,0,1,0],[0,0,1,0]],
@@ -175,7 +175,7 @@ def sir(th=[0.0015, 0.1]):
     >>> sir = jsmfsb.models.sir()
     >>> step = sir.step_gillespie()
     >>> k = jax.random.key(42)
-    >>> jsmfsb.simTs(k, sir.m, 0, 50, 0.1, step)
+    >>> jsmfsb.sim_time_series(k, sir.m, 0, 50, 0.1, step)
     """
     return Spn(["S", "I", "R"], ["S->I", "I->R"], [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
                lambda x, t: jnp.array([th[0]*x[0]*x[1], th[1]*x[1]]),

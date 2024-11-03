@@ -8,7 +8,7 @@ from jax import jit
 
 # MCMC functions
 
-def metropolisHastings(key, init, logLik, rprop,
+def metropolis_hastings(key, init, logLik, rprop,
                        ldprop=lambda n, o: 1, ldprior=lambda x: 1,
                        iters=10000, thin=10, verb=True):
     """Run a Metropolis-Hastings MCMC algorithm for the parameters of a
@@ -83,7 +83,7 @@ def metropolisHastings(key, init, logLik, rprop,
     >>> data = jax.random.normal(k1, 250)*2 + 5
     >>> llik = lambda k, x: jnp.sum(jsp.stats.norm.logpdf(data, x[0], x[1]))
     >>> prop = lambda k, x: jax.random.normal(k, 2)*0.1 + x
-    >>> jsmfsb.metropolisHastings(k2, jnp.array([1.0,1.0]), llik, prop)
+    >>> jsmfsb.metropolis_hastings(k2, jnp.array([1.0,1.0]), llik, prop)
     """
     def step(s, k):
         [x, ll] = s
@@ -107,7 +107,7 @@ def metropolisHastings(key, init, logLik, rprop,
     return states[0]
     
 
-def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
+def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     """Create a function for computing the log of an unbiased estimate of
     marginal likelihood of a time course data set
 
@@ -168,7 +168,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>>     sf = jsmfsb.models.lv(th).step_gillespie()
     >>>     return sf(key, x, t, dt)
     >>> 
-    >>> mll = jsmfsb.pfMLLik(80, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
+    >>> mll = jsmfsb.pf_marginal_ll(80, simX, 0, step, obsll, jsmfsb.data.lv_noise_10)
     >>> k0 = jax.random.key(42)
     >>> mll(k0, jnp.array([1, 0.005, 0.6]))
     >>> mll(k0, jnp.array([2, 0.005, 0.6]))
@@ -216,7 +216,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
 
 # ABC functions
 
-def abcRun(key, n, rprior, rdist, batch_size=None, verb=False):
+def abc_run(key, n, rprior, rdist, batch_size=None, verb=False):
     """Run a set of simulations initialised with parameters sampled from a
     given prior distribution, and compute statistics required for an ABC
     analaysis
@@ -278,7 +278,7 @@ def abcRun(key, n, rprior, rdist, batch_size=None, verb=False):
     >>> def rdis(k, th):
     >>>   return dist(sumStats(rmod(k, th)))
     >>>
-    >>> smfsb.abcRun(k2, 100, rpr, rdis)
+    >>> smfsb.abc_run(k2, 100, rpr, rdis)
     """
     @jit
     def pair(k):
@@ -295,11 +295,11 @@ def abcRun(key, n, rprior, rdist, batch_size=None, verb=False):
 
 # ABC-SMC functions
 
-def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
+def abc_smc_step(key, dprior, priorSample, priorLW, rdist, rperturb,
                dperturb, factor):
     """Carry out one step of an ABC-SMC algorithm
 
-    Not meant to be directly called by users. See abcSmc.
+    Not meant to be directly called by users. See abc_smc.
     """
     k1, k2, k3 = jax.random.split(key, 3)
     n = priorSample.shape[0]
@@ -326,7 +326,7 @@ def abcSmcStep(key, dprior, priorSample, priorLW, rdist, rperturb,
     return new, nlw
 
 
-def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
+def abc_smc(key, N, rprior, dprior, rdist, rperturb, dperturb,
            factor=10, steps=15, verb=False, debug=False):
     """Run an ABC-SMC algorithm for infering the parameters of a forward model
 
@@ -409,7 +409,7 @@ def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
     >>> def rdis(k, th):
     >>>   return dist(sumStats(rmod(k, th)))
     >>> 
-    >>> jsmfsb.abcSmc(k2, 100, rpr,
+    >>> jsmfsb.abc_smc(k2, 100, rpr,
     >>>                        lambda x: jnp.sum(jnp.log(((x<3)&(x>-3))/6)),
     >>>                        rdis,
     >>>                        lambda k,x: jax.random.normal(k)*0.1 + x,
@@ -424,7 +424,7 @@ def abcSmc(key, N, rprior, dprior, rdist, rperturb, dperturb,
         key, k1 = jax.random.split(key)
         if (verb):
             print(steps-i, end=' ', flush=True)
-        priorSample, priorLW = abcSmcStep(k1, dprior, priorSample, priorLW,
+        priorSample, priorLW = abc_smc_step(k1, dprior, priorSample, priorLW,
                                           rdist, rperturb, dperturb, factor)
         if (debug):
             print(priorSample.shape)
