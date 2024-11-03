@@ -165,7 +165,7 @@ def pfMLLik(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     >>>              jax.random.poisson(k2, 100)]).astype(jnp.float32)
     >>> 
     >>> def step(key, x, t, dt, th):
-    >>>     sf = jsmfsb.models.lv(th).stepGillespie()
+    >>>     sf = jsmfsb.models.lv(th).step_gillespie()
     >>>     return sf(key, x, t, dt)
     >>> 
     >>> mll = jsmfsb.pfMLLik(80, simX, 0, step, obsll, jsmfsb.data.LVnoise10)

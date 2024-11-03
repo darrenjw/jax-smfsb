@@ -13,7 +13,7 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     This function simulates single realisation of a model on a 1D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `stepGillespie1D`.
+    `step_gillespie1D`.
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `stepGillespie1D`.
+      such as produced by `step_gillespie1D`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
@@ -48,7 +48,7 @@ def simTs1D(key, x0, t0, tt, dt, stepFun, verb=False):
     >>> import jax
     >>> import jax.numpy as jnp
     >>> lv = jsmfsb.models.lv()
-    >>> stepLv1d = lv.stepGillespie1D(jnp.array([0.6,0.6]))
+    >>> stepLv1d = lv.step_gillespie1D(jnp.array([0.6,0.6]))
     >>> N = 10
     >>> T = 5
     >>> x0 = jnp.zeros((2,N))
@@ -78,7 +78,7 @@ def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
     This function simulates single realisation of a model on a 2D
     regular spatial grid and regular grid of times using a function
     (closure) for advancing the state of the model, such as created by
-    `stepGillespie2D`.
+    `step_gillespie2D`.
 
     Parameters
     ----------
@@ -98,7 +98,7 @@ def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
       accuracy of the simulation process.
     stepFun : function
       A function (closure) for advancing the state of the process,
-      such as produced by `stepGillespie2D`.
+      such as produced by `step_gillespie2D`.
     verb : boolean
       Output progress to the console (this function can be very slow).
 
@@ -113,7 +113,7 @@ def simTs2D(key, x0, t0, tt, dt, stepFun, verb=False):
     >>> import jax
     >>> import jax.numpy as jnp
     >>> lv = jsmfsb.models.lv()
-    >>> stepLv2d = lv.stepGillespie2D(jnp.array([0.6,0.6]))
+    >>> stepLv2d = lv.step_gillespie2D(jnp.array([0.6,0.6]))
     >>> M = 10
     >>> N = 15
     >>> T = 5

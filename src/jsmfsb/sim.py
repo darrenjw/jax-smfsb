@@ -14,8 +14,8 @@ def simTs(key, x0, t0, tt, dt, stepFun):
 
     This function simulates single realisation of a model on a regular
     grid of times using a function (closure) for advancing the state
-    of the model, such as created by ‘stepGillespie’ or
-    ‘stepCLE’.
+    of the model, such as created by ‘step_gillespie’ or
+    ‘step_cle’.
 
     Parameters
     ----------
@@ -33,7 +33,7 @@ def simTs(key, x0, t0, tt, dt, stepFun):
         process.
     stepFun: function
         A function (closure) for advancing the state of the process,
-        such as produced by ‘stepGillespie’ or ‘stepCLE’.
+        such as produced by ‘step_gillespie’ or ‘step_cle’.
 
     Returns
     -------
@@ -44,7 +44,7 @@ def simTs(key, x0, t0, tt, dt, stepFun):
     >>> import jax
     >>> import jsmfsb.models
     >>> lv = jsmfsb.models.lv()
-    >>> stepLv = lv.stepGillespie()
+    >>> stepLv = lv.step_gillespie()
     >>> jsmfsb.simTs(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
     """
     n = int((tt-t0) // dt) + 1
@@ -67,7 +67,7 @@ def simSample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     This function simulates many realisations of a model at a given
     fixed time in the future given an initial time and state, using a
     function (closure) for advancing the state of the model , such as
-    created by ‘stepGillespie’ or ‘stepCLE’.
+    created by ‘step_gillespie’ or ‘step_cle’.
     
     Parameters
     ----------
@@ -84,7 +84,7 @@ def simSample(key, n, x0, t0, deltat, stepFun, batch_size=None):
         system state are required.
     stepFun: function
         A function (closure) for advancing the state of the process,
-        such as produced by `stepGillespie' or `stepCLE'.
+        such as produced by `step_gillespie' or `step_cle'.
     batch_size: int
         A batch size for "jax.lax.map". If provided, will parallelise.
 
@@ -97,7 +97,7 @@ def simSample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     >>> import jax
     >>> import jsmfsb.models
     >>> lv = jsmfsb.models.lv()
-    >>> stepLv = lv.stepGillespie()
+    >>> stepLv = lv.step_gillespie()
     >>> jsmfsb.simSample(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
     """
     u = len(x0)

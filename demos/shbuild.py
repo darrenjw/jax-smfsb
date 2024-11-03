@@ -32,7 +32,7 @@ seirSH = """
 """
 
 seir = jsmfsb.sh2Spn(seirSH)
-stepSeir = seir.stepGillespie()
+stepSeir = seir.step_gillespie()
 k0 = jax.random.key(42)
 out = jsmfsb.simTs(k0, seir.m, 0, 40, 0.05, stepSeir)
 

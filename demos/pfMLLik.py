@@ -14,8 +14,8 @@ def simX(k, t0, th):
     return jnp.array([jax.random.poisson(k1, 50),
                       jax.random.poisson(k2, 100)]).astype(jnp.float32)
 def step(k, x, t, dt, th):
-    sf = jsmfsb.models.lv(th).stepCLE(0.1)
-    #sf = jsmfsb.models.lv(th).stepGillespie()
+    sf = jsmfsb.models.lv(th).step_cle(0.1)
+    #sf = jsmfsb.models.lv(th).step_gillespie()
     return sf(k, x, t, dt)
 mll = jsmfsb.pfMLLik(100, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
 

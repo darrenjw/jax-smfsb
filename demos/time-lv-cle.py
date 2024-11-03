@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import time
 
 lvmod = jsmfsb.models.lv()
-step = lvmod.stepCLE(0.01)
+step = lvmod.step_cle(0.01)
 k0 = jax.random.key(42)
 
 ## Start timer

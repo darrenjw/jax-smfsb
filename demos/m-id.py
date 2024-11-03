@@ -11,7 +11,7 @@ from jax import grad, jit
 import jsmfsb
 
 idmod = jsmfsb.models.id()
-step = idmod.stepGillespie()
+step = idmod.step_gillespie()
 k0 = jax.random.key(42)
 print(step(k0, idmod.m, 0, 30))
 

@@ -45,7 +45,7 @@ def dpr(th):
 
 def rmod(k, th):
   return jsmfsb.simTs(k, jnp.array([50.0, 100]), 0, 30, 2,
-                     jsmfsb.models.lv(jnp.exp(th)).stepCLE(0.1))
+                     jsmfsb.models.lv(jnp.exp(th)).step_cle(0.1))
 
 print("Pilot run...")
 

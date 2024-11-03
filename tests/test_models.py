@@ -7,7 +7,7 @@ import jax.numpy as jnp
 
 def test_bd():
     bd = jsmfsb.models.bd()
-    step = bd.stepGillespie()
+    step = bd.step_gillespie()
     k = jax.random.key(42)
     x = step(k, bd.m, 0, 10)
     assert(x[0] <= bd.m[0])
@@ -15,7 +15,7 @@ def test_bd():
 
 def test_dimer():
     dimer = jsmfsb.models.dimer()
-    step = dimer.stepGillespie()
+    step = dimer.step_gillespie()
     k = jax.random.key(42)
     x = step(k, dimer.m, 0, 10)
     assert(x.shape == dimer.m.shape)
@@ -24,14 +24,14 @@ def test_dimer():
     
 def test_id():
     id = jsmfsb.models.id()
-    step = id.stepGillespie()
+    step = id.step_gillespie()
     k = jax.random.key(42)
     x = step(k, id.m, 0, 10)
     assert(x[0] >= 0)
     
 def test_lv():
     lv = jsmfsb.models.lv()
-    step = lv.stepGillespie()
+    step = lv.step_gillespie()
     k = jax.random.key(42)
     x = step(k, lv.m, 0, 10)
     assert(x.shape == lv.m.shape)
@@ -39,7 +39,7 @@ def test_lv():
 
 def test_mm():
     mm = jsmfsb.models.mm()
-    step = mm.stepGillespie()
+    step = mm.step_gillespie()
     k = jax.random.key(42)
     x = step(k, mm.m, 0, 10)
     assert(x.shape == mm.m.shape)
@@ -49,7 +49,7 @@ def test_mm():
 
 def test_sir():
     sir = jsmfsb.models.sir()
-    step = sir.stepGillespie()
+    step = sir.step_gillespie()
     k = jax.random.key(42)
     x = step(k, sir.m, 0, 10)
     assert(x.shape == sir.m.shape)

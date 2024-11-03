@@ -50,7 +50,7 @@ class Spn:
               [[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
 	      lambda x, t: jnp.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
 	      [197, 3, 0])
-        >>> stepSir = sir.stepGillespie()
+        >>> stepSir = sir.step_gillespie()
         >>> jsmfsb.simSample(jax.random.key(42), 10, sir.m, 0, 20, stepSir)
         """
         self.n = n # species names
@@ -70,7 +70,7 @@ class Spn:
 
 
     
-    def stepGillespie(self, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie(self, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of a SPN by using the
         Gillespie algorithm
 
@@ -102,7 +102,7 @@ class Spn:
         >>> import jsmfsb.models
         >>> import jax
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv = lv.stepGillespie()
+        >>> stepLv = lv.step_gillespie()
         >>> stepLv(jax.random.key(42), lv.m, 0, 1)
         """
         S = (self.post - self.pre).T
@@ -130,7 +130,7 @@ class Spn:
         return step
 
  
-    def stepPTS(self, dt = 0.01):
+    def step_poisson(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a 
         simple approximate Poisson time stepping method
 
@@ -161,7 +161,7 @@ class Spn:
         >>> import jsmfsb.models
         >>> import jax
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv = lv.stepPTS(0.001)
+        >>> stepLv = lv.step_poisson(0.001)
         >>> k = jax.random.key(42)
         >>> stepLv(k, lv.m, 0, 1)
         """
@@ -189,7 +189,7 @@ class Spn:
         return step
 
    
-    def stepEuler(self, dt = 0.01):
+    def step_euler(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         continuous deterministic Euler integration method
 
@@ -219,7 +219,7 @@ class Spn:
         >>> import jsmfsb.models
         >>> import jax
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv = lv.stepEuler(0.001)
+        >>> stepLv = lv.step_euler(0.001)
         >>> k = jax.random.key(42)
         >>> stepLv(k, lv.m, 0, 1)
         """
@@ -244,7 +244,7 @@ class Spn:
         return step
 
     
-    def stepCLE(self, dt = 0.01):
+    def step_cle(self, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama integration method for the associated CLE
 
@@ -275,7 +275,7 @@ class Spn:
         >>> import jsmfsb.models
         >>> import jax
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv = lv.stepCLE(0.001)
+        >>> stepLv = lv.step_cle(0.001)
         >>> stepLv(jax.random.key(42), lv.m, 0, 1)
         """
         S = (self.post - self.pre).T
@@ -304,7 +304,7 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def stepGillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie1D(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
@@ -347,7 +347,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv1d = lv.stepGillespie1D(jnp.array([0.6, 0.6]))
+        >>> stepLv1d = lv.step_gillespie1D(jnp.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2,N))
         >>> x0 = x0.at[:,int(N/2)].set(lv.m)
@@ -402,7 +402,7 @@ class Spn:
         return step
 
     
-    def stepGillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie2D(self, d, minHaz=1e-10, maxHaz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
@@ -445,7 +445,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv2d = lv.stepGillespie2D(jnp.array([0.6, 0.6]))
+        >>> stepLv2d = lv.step_gillespie2D(jnp.array([0.6, 0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2, N, N))
         >>> x0 = x0.at[:, int(N/2), int(N/2)].set(lv.m)
@@ -509,7 +509,7 @@ class Spn:
         return step
 
     
-    def stepCLE1D(self, d, dt = 0.01):
+    def step_cle1D(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 1D regular grid
         
@@ -550,7 +550,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv1d = lv.stepCLE1D(jnp.array([0.6,0.6]))
+        >>> stepLv1d = lv.step_cle1D(jnp.array([0.6,0.6]))
         >>> N = 20
         >>> x0 = jnp.zeros((2,N))
         >>> x0 = x0.at[:,int(N/2)].set(lv.m)
@@ -596,7 +596,7 @@ class Spn:
         return step
 
     
-    def stepCLE2D(self, d, dt = 0.01):
+    def step_cle2D(self, d, dt = 0.01):
         """Create a function for advancing the state of an SPN by using a simple
         Euler-Maruyama discretisation of the CLE on a 2D regular grid
         
@@ -636,7 +636,7 @@ class Spn:
         >>> import jax
         >>> import jax.numpy as jnp
         >>> lv = jsmfsb.models.lv()
-        >>> stepLv2d = lv.stepCLE2D(jnp.array([0.6,0.6]))
+        >>> stepLv2d = lv.step_cle2D(jnp.array([0.6,0.6]))
         >>> M = 15
         >>> N = 20
         >>> x0 = jnp.zeros((2,M,N))

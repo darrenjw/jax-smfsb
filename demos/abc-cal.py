@@ -20,7 +20,7 @@ def rpr(k):
 
 def rmod(k, th):
   return jsmfsb.simTs(k, jnp.array([50.0, 100.0]), 0, 30, 2,
-                     jsmfsb.models.lv(th).stepCLE(0.1))
+                     jsmfsb.models.lv(th).step_cle(0.1))
 
 def ss1d(vec):
   n = len(vec)

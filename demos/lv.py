@@ -12,11 +12,11 @@ import matplotlib.pyplot as plt
 import jsmfsb
 
 lvmod = jsmfsb.models.lv()
-step = lvmod.stepGillespie()
+step = lvmod.step_gillespie()
 k0 = jax.random.key(42)
 print(step(k0, lvmod.m, 0, 30))
 
-stepC = lvmod.stepCLE(0.01)
+stepC = lvmod.step_cle(0.01)
 print(stepC(k0, lvmod.m, 0, 30))
 
 out = jsmfsb.simSample(k0, 10000, lvmod.m, 0, 30, stepC)

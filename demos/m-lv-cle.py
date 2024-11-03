@@ -11,7 +11,7 @@ from jax import grad, jit
 import jsmfsb
 
 lvmod = jsmfsb.models.lv()
-step = lvmod.stepCLE()
+step = lvmod.step_cle()
 k0 = jax.random.key(42)
 print(step(k0, lvmod.m, 0, 30))
 

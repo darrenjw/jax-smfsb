@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import time
 
 lvmod = jsmfsb.models.lv()
-step = lvmod.stepGillespie()
+step = lvmod.step_gillespie()
 k0 = jax.random.key(42)
 
 ## Start timer

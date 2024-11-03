@@ -25,7 +25,7 @@ def bd(th=[1, 1.1]):
     >>> import jsmfsb
     >>> import jax
     >>> bd = jsmfsb.models.bd()
-    >>> step = bd.stepGillespie()
+    >>> step = bd.step_gillespie()
     >>> k = jax.random.key(42)
     >>> jsmfsb.simTs(k, bd.m, 0, 50, 0.1, step)
     """
@@ -53,7 +53,7 @@ def dimer(th=[0.00166, 0.2]):
     >>> import jsmfsb
     >>> import jax
     >>> dimer = jsmfsb.models.dimer()
-    >>> step = dimer.stepGillespie()
+    >>> step = dimer.step_gillespie()
     >>> k = jax.random.key(42)
     >>> jsmfsb.simTs(k, dimer.m, 0, 50, 0.1, step)
     """
@@ -82,7 +82,7 @@ def id(th=[1, 0.1]):
     >>> import smfsb
     >>> import jax
     >>> id = jsmfsb.models.id()
-    >>> step = id.stepGillespie()
+    >>> step = id.step_gillespie()
     >>> k = jax.random.key(42)
     >>> jsmfsb.simTs(k, id.m, 0, 50, 0.1, step)
     """
@@ -112,7 +112,7 @@ def lv(th=[1, 0.005, 0.6]):
     >>> import jsmfsb
     >>> import jax
     >>> lv = jsmfsb.models.lv()
-    >>> step = lv.stepGillespie()
+    >>> step = lv.step_gillespie()
     >>> k = jax.random.key(42)
     >>> jsmfsb.simTs(k, lv.m, 0, 50, 0.1, step)
     """
@@ -142,7 +142,7 @@ def mm(th=[0.00166, 1e-4, 0.1]):
     >>> import jsmfsb
     >>> import jax
     >>> mm = jsmfsb.models.mm()
-    >>> step = mm.stepGillespie()
+    >>> step = mm.step_gillespie()
     >>> k = jax.random.key(42)
     >>> jsmfsb.simTs(k, mm.m, 0, 50, 0.1, step)
     """
@@ -173,7 +173,7 @@ def sir(th=[0.0015, 0.1]):
     >>> import jsmfsb
     >>> import jax
     >>> sir = jsmfsb.models.sir()
-    >>> step = sir.stepGillespie()
+    >>> step = sir.step_gillespie()
     >>> k = jax.random.key(42)
     >>> jsmfsb.simTs(k, sir.m, 0, 50, 0.1, step)
     """

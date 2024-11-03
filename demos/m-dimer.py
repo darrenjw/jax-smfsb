@@ -11,7 +11,7 @@ from jax import grad, jit
 import jsmfsb
 
 dimermod = jsmfsb.models.dimer()
-step = dimermod.stepGillespie()
+step = dimermod.step_gillespie()
 k0 = jax.random.key(42)
 print(step(k0, dimermod.m, 0, 30))
 

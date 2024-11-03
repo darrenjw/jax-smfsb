@@ -30,7 +30,7 @@ def mod2Spn(filename, verb=False):
     --------
     >>> import smfsb
     >>> myMod = smfsb.mod2spn("myModel.mod")
-    >>> step = myMod.stepGillespie()
+    >>> step = myMod.step_gillespie()
     """
     try:
         s = open(filename, "r")
@@ -71,7 +71,7 @@ def sh2Spn(shString, verb=False):
     >>> myModStr = file.read()
     >>> file.close()
     >>> myMod = smfsb.sh2spn(myModStr)
-    >>> step = myMod.stepGillespie()
+    >>> step = myMod.step_gillespie()
     """
     p = mod2sbml.Parser()
     d = p.parse(shString)
@@ -104,7 +104,7 @@ def file2Spn(filename, verb=False):
     --------
     >>> import smfsb
     >>> myMod = smfsb.mod2spn("myModel.xml")
-    >>> step = myMod.stepGillespie()
+    >>> step = myMod.step_gillespie()
     """
     d = libsbml.readSBML(filename)
     m = d.getModel()
@@ -138,7 +138,7 @@ def model2Spn(m, verb=False):
     >>> d = libsbml.readSBML("myModel.xml")
     >>> m = d.getModel()
     >>> myMod = smfsb.model2Spn(m)
-    >>> step = myMod.stepGillespie()
+    >>> step = myMod.step_gillespie()
     """
     # Species and initial amounts
     ns = m.getNumSpecies()

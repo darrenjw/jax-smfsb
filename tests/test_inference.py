@@ -26,7 +26,7 @@ def test_pfmllik():
         return jnp.array([jax.random.poisson(k1, 50),
                           jax.random.poisson(k2, 100)]).astype(jnp.float32)
     def step(k, x, t, dt, th):
-        sf = jsmfsb.models.lv(th).stepCLE()
+        sf = jsmfsb.models.lv(th).step_cle()
         return sf(k, x, t, dt)
     mll = jsmfsb.pfMLLik(50, simX, 0, step, obsll, jsmfsb.data.LVnoise10)
     k = jax.random.key(42)
