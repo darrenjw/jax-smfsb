@@ -23,6 +23,7 @@ publish:
 format:
 	black src/jsmfsb
 	black demos
+	black tests
 
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py tests/*.py &
