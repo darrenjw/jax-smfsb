@@ -12,6 +12,13 @@ Once you have JAX installed and working correctly, you can install this package 
 ```bash
 pip install jsmfsb
 ```
+To upgrade already installed package:
+```bash
+pip install --upgrade jsmfsb
+```
+
+**Note** that a number of breaking syntax changes (more pythonic names) were introduced in version 1.1.0. If you upgrade to a version >= 1.1.0 from a version prior to 1.1.0 you will have to update syntax to the new style.
+
 
 You can test that your installation is working with the following example.
 ```python
