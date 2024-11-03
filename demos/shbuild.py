@@ -37,9 +37,10 @@ k0 = jax.random.key(42)
 out = jsmfsb.sim_time_series(k0, seir.m, 0, 40, 0.05, stepSeir)
 
 import matplotlib.pyplot as plt
+
 fig, axis = plt.subplots()
 for i in range(4):
-	axis.plot(range(out.shape[0]), out[:,i])
+    axis.plot(range(out.shape[0]), out[:, i])
 
 axis.legend(seir.n)
 fig.savefig("shbuild.pdf")
@@ -47,11 +48,11 @@ fig.savefig("shbuild.pdf")
 # sim_sample
 out = jsmfsb.sim_sample(k0, 10000, seir.m, 0, 10, stepSeir)
 import scipy as sp
+
 print(sp.stats.describe(out))
-fig, axes = plt.subplots(4,1)
+fig, axes = plt.subplots(4, 1)
 for i in range(4):
-    axes[i].hist(out[:,i], bins=20)
+    axes[i].hist(out[:, i], bins=20)
 fig.savefig("shbuildH.pdf")
 
 # eof
-

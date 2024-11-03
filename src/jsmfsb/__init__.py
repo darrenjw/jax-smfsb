@@ -6,7 +6,3 @@ from jsmfsb.smfsbSbml import *
 
 import jsmfsb.models
 import jsmfsb.data
-
-
-
-

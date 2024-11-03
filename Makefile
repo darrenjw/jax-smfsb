@@ -20,6 +20,9 @@ publish:
 	make build
 	python3 -m twine upload dist/*$(VERSION)*
 
+format:
+	black src/jsmfsb
+	black demos
 
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py tests/*.py &

@@ -8,15 +8,22 @@ import jax.numpy as jnp
 
 
 def obsll(x, t, y, th):
-    return jnp.sum(jsp.stats.norm.logpdf(y-x, scale=10))
+    return jnp.sum(jsp.stats.norm.logpdf(y - x, scale=10))
+
+
 def simX(k, t0, th):
     k1, k2 = jax.random.split(k)
-    return jnp.array([jax.random.poisson(k1, 50),
-                      jax.random.poisson(k2, 100)]).astype(jnp.float32)
+    return jnp.array([jax.random.poisson(k1, 50), jax.random.poisson(k2, 100)]).astype(
+        jnp.float32
+    )
+
+
 def step(k, x, t, dt, th):
     sf = jsmfsb.models.lv(th).step_cle(0.1)
-    #sf = jsmfsb.models.lv(th).step_gillespie()
+    # sf = jsmfsb.models.lv(th).step_gillespie()
     return sf(k, x, t, dt)
+
+
 mll = jsmfsb.pf_marginal_ll(100, simX, 0, step, obsll, jsmfsb.data.lv_noise_10)
 
 k = jax.random.split(jax.random.key(42), 5)

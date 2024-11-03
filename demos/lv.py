@@ -22,11 +22,11 @@ print(stepC(k0, lvmod.m, 0, 30))
 out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 30, stepC)
 out = jnp.where(out > 1000, 1000, out)
 import scipy as sp
+
 print(sp.stats.describe(out))
-fig, axes = plt.subplots(2,1)
+fig, axes = plt.subplots(2, 1)
 for i in range(2):
-    axes[i].hist(out[:,i], bins=50)
+    axes[i].hist(out[:, i], bins=50)
 fig.savefig("lv.pdf")
 
 # eof
-

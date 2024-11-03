@@ -6,6 +6,7 @@ from jax import jit
 import jax.numpy as jnp
 import jax.lax as jl
 
+
 def sim_time_series_1d(key, x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
@@ -56,20 +57,22 @@ def sim_time_series_1d(key, x0, t0, tt, dt, stepFun, verb=False):
     >>> k0 = jax.random.key(42)
     >>> jsmfsb.sim_time_series_1d(k0, x0, 0, T, 1, stepLv1d, True)
     """
-    N = int((tt - t0)//dt + 1)
+    N = int((tt - t0) // dt + 1)
     u, n = x0.shape
     keys = jax.random.split(key, N)
+
     @jit
     def advance(state, key):
         x, t = state
-        if (verb == True):
+        if verb == True:
             jax.debug.print("{t}", t=t)
         x = stepFun(key, x, t, dt)
         t = t + dt
         return (x, t), x
+
     _, arr = jl.scan(advance, (x0, t0), keys)
     return jnp.moveaxis(arr, 0, 2)
-    
+
 
 def sim_time_series_2d(key, x0, t0, tt, dt, stepFun, verb=False):
     """Simulate a model on a regular grid of times, using a function (closure)
@@ -122,21 +125,21 @@ def sim_time_series_2d(key, x0, t0, tt, dt, stepFun, verb=False):
     >>> k0 = jax.random.key(42)
     >>> jsmfsb.sim_time_series_2d(k0, x0, 0, T, 1, stepLv2d, True)
     """
-    N = int((tt - t0)//dt + 1)
+    N = int((tt - t0) // dt + 1)
     u, m, n = x0.shape
     keys = jax.random.split(key, N)
+
     @jit
     def advance(state, key):
         x, t = state
-        if (verb == True):
+        if verb == True:
             jax.debug.print("{t}", t=t)
         x = stepFun(key, x, t, dt)
         t = t + dt
         return (x, t), x
+
     _, arr = jl.scan(advance, (x0, t0), keys)
     return jnp.moveaxis(arr, 0, 3)
 
 
 # eof
-
-

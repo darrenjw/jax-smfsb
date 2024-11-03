@@ -35,16 +35,15 @@ def mod_to_spn(filename, verb=False):
     try:
         s = open(filename, "r")
     except:
-        sys.stderr.write("Error: failed to open "+filename+"\n")
+        sys.stderr.write("Error: failed to open " + filename + "\n")
         sys.exit(1)
     p = mod2sbml.Parser()
     d = p.parseStream(s)
     m = d.getModel()
-    if (m == None):
+    if m == None:
         sys.stderr.write("Error: can't extract SBML model\n")
         sys.exit(1)
-    return(model_to_spn(m, verb))
-
+    return model_to_spn(m, verb)
 
 
 def shorthand_to_spn(shString, verb=False):
@@ -76,11 +75,10 @@ def shorthand_to_spn(shString, verb=False):
     p = mod2sbml.Parser()
     d = p.parse(shString)
     m = d.getModel()
-    if (m == None):
+    if m == None:
         sys.stderr.write("Error: couldn't parse the shorthand string\n")
         sys.exit(1)
-    return(model_to_spn(m, verb))
-
+    return model_to_spn(m, verb)
 
 
 def file_to_spn(filename, verb=False):
@@ -108,11 +106,10 @@ def file_to_spn(filename, verb=False):
     """
     d = libsbml.readSBML(filename)
     m = d.getModel()
-    if (m == None):
-        sys.stderr.write("Can't parse SBML file: "+filename+"\n")
+    if m == None:
+        sys.stderr.write("Can't parse SBML file: " + filename + "\n")
         sys.exit(1)
-    return(model_to_spn(m, verb))
-
+    return model_to_spn(m, verb)
 
 
 def model_to_spn(m, verb=False):
@@ -142,15 +139,15 @@ def model_to_spn(m, verb=False):
     """
     # Species and initial amounts
     ns = m.getNumSpecies()
-    if (verb):
-        print(str(ns)+" species")
+    if verb:
+        print(str(ns) + " species")
     ml = []
     nl = []
     for i in range(ns):
         s = m.getSpecies(i)
         nl += [s.getId()]
         ml += [s.getInitialAmount()]
-    if (verb):
+    if verb:
         print(nl)
         print(ml)
     # Compartments
@@ -159,7 +156,7 @@ def model_to_spn(m, verb=False):
     for i in range(nc):
         comp = m.getCompartment(i)
         cd[comp.getId()] = comp.getVolume()
-    if (verb):
+    if verb:
         print(cd)
     # Global parameters
     ngp = m.getNumParameters()
@@ -167,12 +164,12 @@ def model_to_spn(m, verb=False):
     for i in range(ngp):
         param = m.getParameter(i)
         gpd[param.getId()] = param.getValue()
-    if (verb):
+    if verb:
         print(gpd)
     # Reactions
     nr = m.getNumReactions()
-    if (verb):
-        print(str(nr)+" reactions")
+    if verb:
+        print(str(nr) + " reactions")
     pre = jnp.zeros((nr, ns))
     post = jnp.zeros((nr, ns))
     rn = []
@@ -190,7 +187,7 @@ def model_to_spn(m, verb=False):
         for j in range(nPost):
             sr = r.getProduct(j)
             sto = sr.getStoichiometry()
-            post= post.at[i, nl.index(sr.getSpecies())].set(sto)
+            post = post.at[i, nl.index(sr.getSpecies())].set(sto)
         kli = r.getKineticLaw()
         kl += [libsbml.formulaToString(kli.getMath())]
         nlp = kli.getNumLocalParameters()
@@ -199,7 +196,7 @@ def model_to_spn(m, verb=False):
             param = kli.getLocalParameter(j)
             lpd[param.getId()] = param.getValue()
         lpl += [lpd]
-    if (verb):
+    if verb:
         print(rn)
         print("Pre:")
         print(pre)
@@ -208,6 +205,7 @@ def model_to_spn(m, verb=False):
         print(kl)
         print(lpl)
     gpd.update(cd)
+
     def haz(x, t):
         h = jnp.zeros(nr)
         xd = dict(zip(nl, x))
@@ -215,14 +213,14 @@ def model_to_spn(m, verb=False):
         glob.update(xd)
         for i in range(nr):
             h = h.at[i].set(eval(kl[i], glob, lpl[i]))
-        return(h)
+        return h
+
     spn = Spn(nl, rn, pre, post, haz, ml)
     spn.comp = cd
     spn.gp = gpd
     spn.kl = kl
     spn.lp = lpl
-    return(spn)
+    return spn
 
 
 # eof
-

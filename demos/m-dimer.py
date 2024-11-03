@@ -18,12 +18,12 @@ print(step(k0, dimermod.m, 0, 30))
 out = jsmfsb.sim_time_series(k0, dimermod.m, 0, 30, 0.1, step)
 
 import matplotlib.pyplot as plt
+
 fig, axis = plt.subplots()
 for i in range(2):
-	axis.plot(range(out.shape[0]), out[:,i])
+    axis.plot(range(out.shape[0]), out[:, i])
 
 axis.legend(dimermod.n)
 fig.savefig("m-dimer.pdf")
 
 # eof
-

@@ -3,10 +3,10 @@
 # simulation functions
 
 
-
 import jax
 from jax import jit
 import jax.lax as jl
+
 
 def sim_time_series(key, x0, t0, tt, dt, stepFun):
     """Simulate a model on a regular grid of times, using a function (closure)
@@ -47,14 +47,16 @@ def sim_time_series(key, x0, t0, tt, dt, stepFun):
     >>> stepLv = lv.step_gillespie()
     >>> jsmfsb.sim_time_series(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
     """
-    n = int((tt-t0) // dt) + 1
+    n = int((tt - t0) // dt) + 1
     keys = jax.random.split(key, n)
+
     @jit
     def advance(state, key):
         x, t = state
         x = stepFun(key, x, t, dt)
         t = t + dt
         return (x, t), x
+
     _, mat = jl.scan(advance, (x0, t0), keys)
     return mat
 
@@ -68,7 +70,7 @@ def sim_sample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     fixed time in the future given an initial time and state, using a
     function (closure) for advancing the state of the model , such as
     created by ‘step_gillespie’ or ‘step_cle’.
-    
+
     Parameters
     ----------
     key: JAX random number key
@@ -102,14 +104,8 @@ def sim_sample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     """
     u = len(x0)
     keys = jax.random.split(key, n)
-    mat = jl.map(lambda k: stepFun(k, x0, t0, deltat), keys,
-                 batch_size=batch_size)
+    mat = jl.map(lambda k: stepFun(k, x0, t0, deltat), keys, batch_size=batch_size)
     return mat
 
 
-
-
-
-
 # eof
-
