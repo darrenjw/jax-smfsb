@@ -24,6 +24,7 @@ format:
 	black src/jsmfsb
 	black demos
 	black tests
+	black docs
 
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py tests/*.py &
