@@ -1,0 +1,25 @@
+# This file configures the continuous integration (CI) system on GitHub.
+# Introductory materials can be found here: https://docs.github.com/en/actions/learn-github-actions/understanding-github-actions.
+# Documentation for editing this file can be found here: https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
+
+name: Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+
+      - name: Run linter
+        run: |
+          uvx -p 3.11 black --check .
