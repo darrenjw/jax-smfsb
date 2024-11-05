@@ -46,7 +46,7 @@ def mod_to_spn(filename, verb=False):
     return model_to_spn(m, verb)
 
 
-def shorthand_to_spn(shString, verb=False):
+def shorthand_to_spn(sh_string, verb=False):
     """Convert an SBML-shorthand model string into a Spn object
 
     Parse a string containing a model in SBML-shorthand and convert into
@@ -54,7 +54,7 @@ def shorthand_to_spn(shString, verb=False):
 
     Parameters
     ----------
-    shString: string
+    sh_string: string
         String containing the model
     verb: boolean
         Output some debugging info
@@ -73,7 +73,7 @@ def shorthand_to_spn(shString, verb=False):
     >>> step = myMod.step_gillespie()
     """
     p = mod2sbml.Parser()
-    d = p.parse(shString)
+    d = p.parse(sh_string)
     m = d.getModel()
     if m == None:
         sys.stderr.write("Error: couldn't parse the shorthand string\n")
@@ -178,13 +178,13 @@ def model_to_spn(m, verb=False):
     for i in range(nr):
         r = m.getReaction(i)
         rn += [r.getId()]
-        nPre = r.getNumReactants()
-        for j in range(nPre):
+        n_pre = r.getNumReactants()
+        for j in range(n_pre):
             sr = r.getReactant(j)
             sto = sr.getStoichiometry()
             pre = pre.at[i, nl.index(sr.getSpecies())].set(sto)
-        nPost = r.getNumProducts()
-        for j in range(nPost):
+        n_post = r.getNumProducts()
+        for j in range(n_post):
             sr = r.getProduct(j)
             sto = sr.getStoichiometry()
             post = post.at[i, nl.index(sr.getSpecies())].set(sto)

@@ -70,7 +70,7 @@ class Spn:
             str(self.m),
         )
 
-    def step_gillespie(self, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie(self, min_haz=1e-10, max_haz=1e07):
         """Create a function for advancing the state of a SPN by using the
         Gillespie algorithm
 
@@ -81,9 +81,9 @@ class Spn:
 
         Parameters
         ----------
-        minHaz : float
+        min_haz : float
           Minimum hazard to consider before assuming 0. Defaults to 1e-10.
-        maxHaz : float
+        max_haz : float
           Maximum hazard to consider before assuming an explosion and
           bailing out. Defaults to 1e07.
 
@@ -105,8 +105,8 @@ class Spn:
         >>> stepLv = lv.step_gillespie()
         >>> stepLv(jax.random.key(42), lv.m, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         @jit
         def advance(state):
@@ -114,10 +114,10 @@ class Spn:
             h = self.h(x, t)
             h0 = jnp.sum(h)
             key, k1, k2 = jax.random.split(key, 3)
-            t = jnp.where(h0 > maxHaz, 1e90, t)
-            t = jnp.where(h0 < minHaz, 1e90, t + jax.random.exponential(k1) / h0)
+            t = jnp.where(h0 > max_haz, 1e90, t)
+            t = jnp.where(h0 < min_haz, 1e90, t + jax.random.exponential(k1) / h0)
             j = jax.random.choice(k2, v, p=h / h0)
-            xn = jnp.add(x, S[:, j])
+            xn = jnp.add(x, sto[:, j])
             return (key, x, xn, t)
 
         @jit
@@ -167,8 +167,8 @@ class Spn:
         >>> k = jax.random.key(42)
         >>> stepLv(k, lv.m, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         @jit
         def advance(state):
@@ -176,7 +176,7 @@ class Spn:
             key, k1 = jax.random.split(key)
             h = self.h(x, t)
             r = jax.random.poisson(k1, h * dt)
-            x = jnp.add(x, S.dot(r))
+            x = jnp.add(x, sto.dot(r))
             # TODO: sort out negative values
             # x = jnp.where(x < 0, -x, x)
             t = t + dt
@@ -228,14 +228,14 @@ class Spn:
         >>> k = jax.random.key(42)
         >>> stepLv(k, lv.m, 0, 1)
         """
-        S = (self.post - self.pre).T
+        sto = (self.post - self.pre).T
 
         @jit
         def advance(state):
             key, x, t = state
             key, k1 = jax.random.split(key)
             h = self.h(x, t)
-            x = jnp.add(x, S.dot(h * dt))
+            x = jnp.add(x, sto.dot(h * dt))
             x = jnp.where(x < 0, -x, x)
             t = t + dt
             return (key, x, t)
@@ -286,8 +286,8 @@ class Spn:
         >>> stepLv = lv.step_cle(0.001)
         >>> stepLv(jax.random.key(42), lv.m, 0, 1)
         """
-        S = (self.post - self.pre).T
-        v = S.shape[1]
+        sto = (self.post - self.pre).T
+        v = sto.shape[1]
         sdt = np.sqrt(dt)
 
         @jit
@@ -296,7 +296,7 @@ class Spn:
             key, k1 = jax.random.split(key)
             h = self.h(x, t)
             dw = jax.random.normal(k1, [v]) * sdt
-            x = jnp.add(x, S.dot(h * dt + jnp.sqrt(h) * dw))
+            x = jnp.add(x, sto.dot(h * dt + jnp.sqrt(h) * dw))
             x = jnp.where(x < 0, -x, x)
             t = t + dt
             return (key, x, t)
@@ -315,7 +315,7 @@ class Spn:
 
     # spatial simulation functions, from chapter 9
 
-    def step_gillespie_1d(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_1d(self, d, min_haz=1e-10, max_haz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 1D regular grid
 
@@ -334,9 +334,9 @@ class Spn:
           compartment. The hazard for a given molecule leaving the
           compartment is therefore twice this value (as it can leave to
           the left or the right).
-        minHaz : float
+        min_haz : float
           Minimum hazard to consider before assuming 0. Defaults to 1e-10.
-        maxHaz : float
+        max_haz : float
           Maximum hazard to consider before assuming an explosion and
           bailing out. Defaults to 1e07.
 
@@ -365,8 +365,8 @@ class Spn:
         >>> k0 = jax.random.key(42)
         >>> stepLv1d(k0, x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         @jit
         def advance(state):
@@ -379,8 +379,8 @@ class Spn:
             hds = jnp.apply_along_axis(jnp.sum, 0, hd)
             hdss = hds.sum()
             h0 = hrss + hdss
-            t = jnp.where(h0 > maxHaz, 1e90, t)
-            t = jnp.where(h0 < minHaz, 1e90, t + jax.random.exponential(k1) / h0)
+            t = jnp.where(h0 > max_haz, 1e90, t)
+            t = jnp.where(h0 < min_haz, 1e90, t + jax.random.exponential(k1) / h0)
 
             def diffuse(key, x):
                 n = x.shape[1]
@@ -399,7 +399,7 @@ class Spn:
                 k1, k2 = jax.random.split(key, 2)
                 j = jax.random.choice(k1, n, p=hrs / hrss)  # pick a box
                 i = jax.random.choice(k2, v, p=hr[:, j] / hrs[j])  # pick a reaction
-                x = x.at[:, j].set(jnp.add(x[:, j], S[:, i]))
+                x = x.at[:, j].set(jnp.add(x[:, j], sto[:, i]))
                 return x
 
             xn = jnp.where(
@@ -419,7 +419,7 @@ class Spn:
 
         return step
 
-    def step_gillespie_2d(self, d, minHaz=1e-10, maxHaz=1e07):
+    def step_gillespie_2d(self, d, min_haz=1e-10, max_haz=1e07):
         """Create a function for advancing the state of an SPN by using the
         Gillespie algorithm on a 2D regular grid
 
@@ -438,9 +438,9 @@ class Spn:
           compartment. The hazard for a given molecule leaving the
           compartment is therefore four times this value (as it can leave in
           one of 4 directions).
-        minHaz : float
+        min_haz : float
           Minimum hazard to consider before assuming 0. Defaults to 1e-10.
-        maxHaz : float
+        max_haz : float
           Maximum hazard to consider before assuming an explosion and
           bailing out. Defaults to 1e07.
 
@@ -469,8 +469,8 @@ class Spn:
         >>> k0 = jax.random.key(42)
         >>> stepLv2d(k0, x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
 
         @jit
         def advance(state):
@@ -483,8 +483,8 @@ class Spn:
             hds = jnp.sum(hd, axis=(0))
             hdss = hds.sum()
             h0 = hrss + hdss
-            t = jnp.where(h0 > maxHaz, 1e90, t)
-            t = jnp.where(h0 < minHaz, 1e90, t + jax.random.exponential(k1) / h0)
+            t = jnp.where(h0 > max_haz, 1e90, t)
+            t = jnp.where(h0 < min_haz, 1e90, t + jax.random.exponential(k1) / h0)
 
             def diffuse(key, x):
                 uu, m, n = x.shape
@@ -522,7 +522,7 @@ class Spn:
                 k = jax.random.choice(
                     k2, v, p=hr[:, i, j] / hrs[i, j]
                 )  # pick a reaction
-                x = x.at[:, i, j].set(jnp.add(x[:, i, j], S[:, k]))
+                x = x.at[:, i, j].set(jnp.add(x[:, i, j], sto[:, k]))
                 return x
 
             xn = jnp.where(
@@ -590,8 +590,8 @@ class Spn:
         >>> k0 = jax.random.key(42)
         >>> stepLv1d(k0, x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
         sdt = np.sqrt(dt)
 
         def forward(m):
@@ -623,8 +623,8 @@ class Spn:
 
         def step(key, x0, t0, deltat):
             n = x0.shape[1]
-            T = int(deltat // dt) + 1
-            keys = jax.random.split(key, T)
+            tt = int(deltat // dt) + 1
+            keys = jax.random.split(key, tt)
 
             def advance(state, key):
                 k1, k2 = jax.random.split(key)
@@ -633,12 +633,12 @@ class Spn:
                 x = diffuse(k1, x)
                 hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
                 dwt = jax.random.normal(k2, (v, n)) * sdt
-                x = x + S @ (hr * dt + jnp.diag(jnp.sqrt(hr)) @ dwt)
+                x = x + sto @ (hr * dt + jnp.diag(jnp.sqrt(hr)) @ dwt)
                 x = rectify(x)
                 return (x, t), x
 
             _, out = jl.scan(advance, (x0, t0), keys)
-            return out[T - 1]
+            return out[tt - 1]
 
         step = jit(step, static_argnums=(3,))
         return step
@@ -691,8 +691,8 @@ class Spn:
         >>> k0 = jax.random.key(42)
         >>> stepLv2d(k0, x0, 0, 1)
         """
-        S = (self.post - self.pre).T
-        u, v = S.shape
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
         sdt = np.sqrt(dt)
 
         def left(a):
@@ -739,12 +739,12 @@ class Spn:
             si = si.reshape(2, v)
             hri = si[0]
             dwti = si[1]
-            return S @ (hri * dt + jnp.sqrt(hri) * dwti)
+            return sto @ (hri * dt + jnp.sqrt(hri) * dwti)
 
         def step(key, x0, t0, deltat):
             uu, m, n = x0.shape
-            T = int(deltat // dt) + 1
-            keys = jax.random.split(key, T)
+            tt = int(deltat // dt) + 1
+            keys = jax.random.split(key, tt)
 
             def advance(state, key):
                 k1, k2 = jax.random.split(key)
@@ -760,7 +760,7 @@ class Spn:
                 return (x, t), x
 
             _, out = jl.scan(advance, (x0, t0), keys)
-            return out[T - 1]
+            return out[tt - 1]
 
         step = jit(step, static_argnums=(3,))
         return step

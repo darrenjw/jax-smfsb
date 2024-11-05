@@ -12,7 +12,7 @@ from jax import jit
 def metropolis_hastings(
     key,
     init,
-    logLik,
+    log_lik,
     rprop,
     ldprop=lambda n, o: 1,
     ldprior=lambda x: 1,
@@ -36,7 +36,7 @@ def metropolis_hastings(
       A key to seed the simulation.
     init : vector
       A parameter vector with which to initialise the MCMC algorithm.
-    logLik : (stochastic) function
+    log_lik : (stochastic) function
       A function which takes two arguments: a JAX random key and
       a parameter (the same type as `init`) as its
       second argument. It should return the log-likelihood of the
@@ -99,7 +99,7 @@ def metropolis_hastings(
         [x, ll] = s
         k1, k2, k3 = jax.random.split(k, 3)
         prop = rprop(k1, x)
-        llprop = logLik(k2, prop)
+        llprop = log_lik(k2, prop)
         a = llprop - ll + ldprior(prop) - ldprior(x) + ldprop(x, prop) - ldprop(prop, x)
         accept = jnp.log(jax.random.uniform(k3)) < a
         s = [jnp.where(accept, prop, x), jnp.where(accept, llprop, ll)]
@@ -118,7 +118,7 @@ def metropolis_hastings(
     return states[0]
 
 
-def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
+def pf_marginal_ll(n, sim_x0, t0, step_fun, data_ll, data, debug=False):
     """Create a function for computing the log of an unbiased estimate of
     marginal likelihood of a time course data set
 
@@ -131,7 +131,7 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     n :  int
       An integer representing the number of particles to use in the
       particle filter.
-    simX0 : function
+    sim_x0 : function
       A function with arguments `key`, `t0` and `th`, where ‘t0’ is a time
       at which to simulate from an initial distribution for the state of the
       particle filter and `th` is a vector of parameters. The return value
@@ -141,11 +141,11 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     t0 : float
       The time corresponding to the starting point of the Markov
       process. Can be no bigger than the smallest observation time.
-    stepFun : function
+    step_fun : function
       A function for advancing the state of the Markov process, with
       arguments `key`, `x`, `t0`, `deltat` and `th`, with `th` representing a
       vector of parameters.
-    dataLLik : function
+    data_ll : function
       A function with arguments `x`, `t`, `y`, `th`,
       where `x` and `t` represent the true state and time of the
       process, `y` is the observed data, and `th` is a parameter vector.
@@ -199,7 +199,7 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
     def go(key, th):
         key, k1 = jax.random.split(key)
         keys = jax.random.split(k1, n)
-        xmat = jax.lax.map(lambda k: simX0(k, t0, th), keys)
+        xmat = jax.lax.map(lambda k: sim_x0(k, t0, th), keys)
         sh = xmat.shape
         if debug:
             print(sh)
@@ -212,11 +212,11 @@ def pf_marginal_ll(n, simX0, t0, stepFun, dataLLik, data, debug=False):
             keys = jax.random.split(k1, n)
 
             def prop(k, x):
-                return stepFun(k, x, times[i], deltas[i], th)
+                return step_fun(k, x, times[i], deltas[i], th)
 
             xmat = jax.vmap(prop)(keys, xmat)
             lw = jnp.apply_along_axis(
-                lambda x: dataLLik(x, times[i + 1], obs[i,], th), 1, xmat
+                lambda x: data_ll(x, times[i + 1], obs[i,], th), 1, xmat
             )
             m = jnp.max(lw)
             sw = jnp.exp(lw - m)
@@ -317,33 +317,35 @@ def abc_run(key, n, rprior, rdist, batch_size=None, verb=False):
 # ABC-SMC functions
 
 
-def abc_smc_step(key, dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor):
+def abc_smc_step(
+    key, dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor
+):
     """Carry out one step of an ABC-SMC algorithm
 
     Not meant to be directly called by users. See abc_smc.
     """
     k1, k2, k3 = jax.random.split(key, 3)
-    n = priorSample.shape[0]
-    mx = jnp.max(priorLW)
-    rw = jnp.exp(priorLW - mx)
-    priorInd = jax.random.choice(k1, n, shape=(n * factor,), p=rw / jnp.sum(rw))
-    prior = priorSample[priorInd, :]
-    keys = jax.random.split(k2, len(priorInd))
+    n = prior_sample.shape[0]
+    mx = jnp.max(prior_lw)
+    rw = jnp.exp(prior_lw - mx)
+    prior_ind = jax.random.choice(k1, n, shape=(n * factor,), p=rw / jnp.sum(rw))
+    prior = prior_sample[prior_ind, :]
+    keys = jax.random.split(k2, len(prior_ind))
     prop = jax.vmap(rperturb)(keys, prior)
-    keys2 = jax.random.split(k3, len(priorInd))
+    keys2 = jax.random.split(k3, len(prior_ind))
     dist = jax.vmap(rdist)(keys2, prop)  # this is typically the slow step
-    qCut = jnp.nanquantile(dist, 1 / factor)
-    new = prop[dist < qCut, :]
+    q_cut = jnp.nanquantile(dist, 1 / factor)
+    new = prop[dist < q_cut, :]
 
-    def logWeight(th):
-        terms = priorLW + jnp.apply_along_axis(
-            lambda x: dperturb(th, x), 1, priorSample
+    def log_weight(th):
+        terms = prior_lw + jnp.apply_along_axis(
+            lambda x: dperturb(th, x), 1, prior_sample
         )
         mt = jnp.max(terms)
         denom = mt + jnp.log(jnp.sum(jnp.exp(terms - mt)))
         return dprior(th) - denom
 
-    lw = jnp.apply_along_axis(logWeight, 1, new)
+    lw = jnp.apply_along_axis(log_weight, 1, new)
     mx = jnp.max(lw)
     rw = jnp.exp(lw - mx)
     nlw = jnp.log(rw / jnp.sum(rw))
@@ -352,7 +354,7 @@ def abc_smc_step(key, dprior, priorSample, priorLW, rdist, rperturb, dperturb, f
 
 def abc_smc(
     key,
-    N,
+    n,
     rprior,
     dprior,
     rdist,
@@ -373,7 +375,7 @@ def abc_smc(
     ----------
     key : JAX random key
       A key to initialise the simulation.
-    N : int
+    n : int
       An integer representing the number of simulations to pass on
       at each stage of the SMC algorithm. Note that the TOTAL
       number of forward simulations required by the algorithm will
@@ -451,27 +453,27 @@ def abc_smc(
     >>>                        lambda x,y: jnp.sum(jsp.stats.norm.logpdf(y, x, 0.1)))
     """
     key, k1 = jax.random.split(key)
-    priorLW = jnp.log(jnp.zeros((N)) + 1 / N)
-    keys = jax.random.split(k1, N)
-    priorSample = jax.lax.map(rprior, keys)
+    prior_lw = jnp.log(jnp.zeros((n)) + 1 / n)
+    keys = jax.random.split(k1, n)
+    prior_sample = jax.lax.map(rprior, keys)
     # TODO: worth turning this loop into a "scan"? Maybe not.
     for i in range(steps):
         key, k1 = jax.random.split(key)
         if verb:
             print(steps - i, end=" ", flush=True)
-        priorSample, priorLW = abc_smc_step(
-            k1, dprior, priorSample, priorLW, rdist, rperturb, dperturb, factor
+        prior_sample, prior_lw = abc_smc_step(
+            k1, dprior, prior_sample, prior_lw, rdist, rperturb, dperturb, factor
         )
         if debug:
-            print(priorSample.shape)
-            print(priorLW.shape)
+            print(prior_sample.shape)
+            print(prior_lw.shape)
     if verb:
         print("Done.")
     if debug:
-        print(priorSample.shape)
-        print(priorLW.shape)
-    ind = jax.random.choice(key, priorLW.shape[0], shape=(N,), p=jnp.exp(priorLW))
-    return priorSample[ind, :]
+        print(prior_sample.shape)
+        print(prior_lw.shape)
+    ind = jax.random.choice(key, prior_lw.shape[0], shape=(n,), p=jnp.exp(prior_lw))
+    return prior_sample[ind, :]
 
 
 # eof

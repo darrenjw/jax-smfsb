@@ -8,7 +8,7 @@ from jax import jit
 import jax.lax as jl
 
 
-def sim_time_series(key, x0, t0, tt, dt, stepFun):
+def sim_time_series(key, x0, t0, tt, dt, step_fun):
     """Simulate a model on a regular grid of times, using a function (closure)
     for advancing the state of the model
 
@@ -31,7 +31,7 @@ def sim_time_series(key, x0, t0, tt, dt, stepFun):
         The time step of the output. Note that this time step relates only to
         the recorded output, and has no bearing on the accuracy of the simulation
         process.
-    stepFun: function
+    step_fun: function
         A function (closure) for advancing the state of the process,
         such as produced by ‘step_gillespie’ or ‘step_cle’.
 
@@ -53,7 +53,7 @@ def sim_time_series(key, x0, t0, tt, dt, stepFun):
     @jit
     def advance(state, key):
         x, t = state
-        x = stepFun(key, x, t, dt)
+        x = step_fun(key, x, t, dt)
         t = t + dt
         return (x, t), x
 
@@ -61,7 +61,7 @@ def sim_time_series(key, x0, t0, tt, dt, stepFun):
     return mat
 
 
-def sim_sample(key, n, x0, t0, deltat, stepFun, batch_size=None):
+def sim_sample(key, n, x0, t0, deltat, step_fun, batch_size=None):
     """Simulate a many realisations of a model at a given fixed time in the
     future given an initial time and state, using a function (closure) for
     advancing the state of the model
@@ -84,7 +84,7 @@ def sim_sample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     deltat: float
         The amount of time in the future of t0 at which samples of the
         system state are required.
-    stepFun: function
+    step_fun: function
         A function (closure) for advancing the state of the process,
         such as produced by `step_gillespie' or `step_cle'.
     batch_size: int
@@ -104,7 +104,7 @@ def sim_sample(key, n, x0, t0, deltat, stepFun, batch_size=None):
     """
     u = len(x0)
     keys = jax.random.split(key, n)
-    mat = jl.map(lambda k: stepFun(k, x0, t0, deltat), keys, batch_size=batch_size)
+    mat = jl.map(lambda k: step_fun(k, x0, t0, deltat), keys, batch_size=batch_size)
     return mat
 
 

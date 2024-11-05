@@ -26,6 +26,9 @@ format:
 	black tests
 	black docs
 
+check:
+	ruff check --select N
+
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py tests/*.py &
 
