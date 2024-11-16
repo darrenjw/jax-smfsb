@@ -26,8 +26,8 @@ def test_simsamples():
     step = lv.step_gillespie()
     k0 = jax.random.key(42)
     out = jsmfsb.sim_sample(k0, 20, lv.m, 0, 10, step)
-    outB = jsmfsb.sim_sample(k0, 20, lv.m, 0, 10, step, batch_size=5)
-    assert jnp.all(out == outB)
+    out_b = jsmfsb.sim_sample(k0, 20, lv.m, 0, 10, step, batch_size=5)
+    assert jnp.all(out == out_b)
 
 
 # eof

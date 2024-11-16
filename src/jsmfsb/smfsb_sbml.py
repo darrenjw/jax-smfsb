@@ -40,7 +40,7 @@ def mod_to_spn(filename, verb=False):
     p = mod2sbml.Parser()
     d = p.parseStream(s)
     m = d.getModel()
-    if m == None:
+    if m is None:
         sys.stderr.write("Error: can't extract SBML model\n")
         sys.exit(1)
     return model_to_spn(m, verb)
@@ -75,7 +75,7 @@ def shorthand_to_spn(sh_string, verb=False):
     p = mod2sbml.Parser()
     d = p.parse(sh_string)
     m = d.getModel()
-    if m == None:
+    if m is None:
         sys.stderr.write("Error: couldn't parse the shorthand string\n")
         sys.exit(1)
     return model_to_spn(m, verb)
@@ -106,7 +106,7 @@ def file_to_spn(filename, verb=False):
     """
     d = libsbml.readSBML(filename)
     m = d.getModel()
-    if m == None:
+    if m is None:
         sys.stderr.write("Can't parse SBML file: " + filename + "\n")
         sys.exit(1)
     return model_to_spn(m, verb)

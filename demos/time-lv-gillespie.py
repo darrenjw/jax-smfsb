@@ -6,6 +6,7 @@ import jax
 import jax.numpy as jnp
 import jsmfsb
 import matplotlib.pyplot as plt
+import scipy as sp
 import time
 
 lvmod = jsmfsb.models.lv()
@@ -21,7 +22,6 @@ elapsed_time = end_time - start_time
 print(f"\n\nElapsed time: {elapsed_time} seconds\n\n")
 
 out = jnp.where(out > 1000, 1000, out)
-import scipy as sp
 
 print(sp.stats.describe(out))
 fig, axes = plt.subplots(2, 1)

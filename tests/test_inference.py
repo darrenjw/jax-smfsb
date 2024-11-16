@@ -22,7 +22,7 @@ def test_pfmllik():
     def obsll(x, t, y, th):
         return jnp.sum(jsp.stats.norm.logpdf((y - x) / 10))
 
-    def simX(k, t0, th):
+    def sim_x(k, t0, th):
         k1, k2 = jax.random.split(k)
         return jnp.array(
             [jax.random.poisson(k1, 50), jax.random.poisson(k2, 100)]
@@ -32,7 +32,7 @@ def test_pfmllik():
         sf = jsmfsb.models.lv(th).step_cle()
         return sf(k, x, t, dt)
 
-    mll = jsmfsb.pf_marginal_ll(50, simX, 0, step, obsll, jsmfsb.data.lv_noise_10)
+    mll = jsmfsb.pf_marginal_ll(50, sim_x, 0, step, obsll, jsmfsb.data.lv_noise_10)
     k = jax.random.key(42)
     assert mll(k, jnp.array([1, 0.005, 0.6])) > mll(k, jnp.array([2, 0.005, 0.6]))
 
@@ -48,17 +48,17 @@ def test_abc_run():
     def rmod(k, th):
         return jax.random.normal(k, 250) * th[1] + th[0]
 
-    def sumStats(dat):
+    def sum_stats(dat):
         return jnp.array([jnp.mean(dat), jnp.std(dat)])
 
-    ssd = sumStats(data)
+    ssd = sum_stats(data)
 
     def dist(ss):
         diff = ss - ssd
         return jnp.sqrt(jnp.sum(diff * diff))
 
     def rdis(k, th):
-        return dist(sumStats(rmod(k, th)))
+        return dist(sum_stats(rmod(k, th)))
 
     p, d = jsmfsb.abc_run(k2, 100, rpr, rdis)
     assert len(p) == 100
@@ -76,33 +76,33 @@ def test_abcsmcstep():
     def rmod(k, th):
         return jax.random.normal(k, 250) * jnp.exp(th[1]) + jnp.exp(th[0])
 
-    def sumStats(dat):
+    def sum_stats(dat):
         return jnp.array([jnp.mean(dat), jnp.std(dat)])
 
-    ssd = sumStats(data)
+    ssd = sum_stats(data)
 
     def dist(ss):
         diff = ss - ssd
         return jnp.sqrt(jnp.sum(diff * diff))
 
     def rdis(k, th):
-        return dist(sumStats(rmod(k, th)))
+        return dist(sum_stats(rmod(k, th)))
 
-    N = 100
-    keys = jax.random.split(k2, N)
+    n = 100
+    keys = jax.random.split(k2, n)
     samples = jax.lax.map(rpr, keys)
     th, lw = jsmfsb.abc_smc_step(
         k0,
         lambda x: jnp.log(jnp.sum(((x < 3) & (x > -3)) / 6)),
         samples,
-        jnp.zeros(N) + jnp.log(1 / N),
+        jnp.zeros(n) + jnp.log(1 / n),
         rdis,
         lambda k, x: jax.random.normal(k) * 0.1 + x,
         lambda x, y: jnp.sum(jsp.stats.norm.logpdf(y, x, 0.1)),
         10,
     )
-    assert th.shape == (N, 2)
-    assert len(lw) == N
+    assert th.shape == (n, 2)
+    assert len(lw) == n
 
 
 def test_abcsmc():
@@ -116,29 +116,29 @@ def test_abcsmc():
     def rmod(k, th):
         return jax.random.normal(k, 250) * jnp.exp(th[1]) + jnp.exp(th[0])
 
-    def sumStats(dat):
+    def sum_stats(dat):
         return jnp.array([jnp.mean(dat), jnp.std(dat)])
 
-    ssd = sumStats(data)
+    ssd = sum_stats(data)
 
     def dist(ss):
         diff = ss - ssd
         return jnp.sqrt(jnp.sum(diff * diff))
 
     def rdis(k, th):
-        return dist(sumStats(rmod(k, th)))
+        return dist(sum_stats(rmod(k, th)))
 
-    N = 100
+    n = 100
     post = jsmfsb.abc_smc(
         k2,
-        N,
+        n,
         rpr,
         lambda x: jnp.sum(jnp.log(((x < 3) & (x > -3)) / 6)),
         rdis,
         lambda k, x: jax.random.normal(k) * 0.1 + x,
         lambda x, y: jnp.sum(jsp.stats.norm.logpdf(y, x, 0.1)),
     )
-    assert post.shape == (N, 2)
+    assert post.shape == (n, 2)
 
 
 # eof

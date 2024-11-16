@@ -4,6 +4,7 @@
 import jsmfsb
 import jax
 import jax.numpy as jnp
+import matplotlib.pyplot as plt
 
 k0 = jax.random.key(42)
 k1, k2 = jax.random.split(k0)
@@ -41,8 +42,6 @@ q = jnp.quantile(d, 0.01)
 prmat = jnp.vstack(p)
 postmat = prmat[d < q, :]
 its, var = postmat.shape
-
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(3, 2)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

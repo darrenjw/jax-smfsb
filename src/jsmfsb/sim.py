@@ -102,7 +102,6 @@ def sim_sample(key, n, x0, t0, deltat, step_fun, batch_size=None):
     >>> stepLv = lv.step_gillespie()
     >>> jsmfsb.sim_sample(jax.random.key(42), 10, lv.m, 0, 30, stepLv)
     """
-    u = len(x0)
     keys = jax.random.split(key, n)
     mat = jl.map(lambda k: step_fun(k, x0, t0, deltat), keys, batch_size=batch_size)
     return mat

@@ -5,6 +5,7 @@
 import jsmfsb
 import jax
 import jax.numpy as jnp
+import matplotlib.pyplot as plt
 
 print("ABC")
 
@@ -56,8 +57,6 @@ its, var = postmat.shape
 print(its, var)
 
 postmat = jnp.log(postmat)  # look at posterior on log scale
-
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(2, 3)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

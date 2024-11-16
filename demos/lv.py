@@ -5,6 +5,7 @@
 import jax
 import jax.numpy as jnp
 import matplotlib.pyplot as plt
+import scipy as sp
 
 import jsmfsb
 
@@ -18,7 +19,6 @@ print(step_c(k0, lvmod.m, 0, 30))
 
 out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 30, step_c)
 out = jnp.where(out > 1000, 1000, out)
-import scipy as sp
 
 print(sp.stats.describe(out))
 fig, axes = plt.subplots(2, 1)

@@ -5,6 +5,7 @@ import jsmfsb
 import jax
 import jax.numpy as jnp
 import jax.scipy as jsp
+import matplotlib.pyplot as plt
 
 print("ABC-SMC")
 
@@ -13,7 +14,7 @@ data = jsmfsb.data.lv_perfect[:, 1:3]
 # Very vague prior
 
 
-def rpr(k):
+def rpr0(k):
     k1, k2, k3 = jax.random.split(k, 3)
     return jnp.array(
         [
@@ -24,7 +25,7 @@ def rpr(k):
     )
 
 
-def dpr(th):
+def dpr0(th):
     return jnp.sum(
         jnp.log(
             jnp.array(
@@ -144,8 +145,6 @@ postmat = jsmfsb.abc_smc(
 
 its, var = postmat.shape
 print(its, var)
-
-import matplotlib.pyplot as plt
 
 fig, axes = plt.subplots(2, 3)
 axes[0, 0].scatter(postmat[:, 0], postmat[:, 1], s=0.5)

@@ -3,6 +3,7 @@
 # use a pre-defined model
 
 import jax
+import matplotlib.pyplot as plt
 
 import jsmfsb
 
@@ -12,8 +13,6 @@ k0 = jax.random.key(42)
 print(step(k0, mmmod.m, 0, 30))
 
 out = jsmfsb.sim_time_series(k0, mmmod.m, 0, 100, 0.1, step)
-
-import matplotlib.pyplot as plt
 
 fig, axis = plt.subplots()
 for i in range(4):

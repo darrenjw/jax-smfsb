@@ -28,6 +28,7 @@ format:
 
 check:
 	ruff check --select N
+	ruff check
 
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py demos/*.py tests/*.py &
