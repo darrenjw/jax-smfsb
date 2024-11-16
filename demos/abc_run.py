@@ -4,7 +4,6 @@
 import jsmfsb
 import jax
 import jax.numpy as jnp
-import jax.scipy as jsp
 
 k0 = jax.random.key(42)
 k1, k2 = jax.random.split(k0)

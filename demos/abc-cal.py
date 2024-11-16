@@ -5,7 +5,6 @@
 import jsmfsb
 import jax
 import jax.numpy as jnp
-import jax.scipy as jsp
 
 # import math
 

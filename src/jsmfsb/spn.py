@@ -3,9 +3,8 @@
 
 import numpy as np
 import jax
-from jax import grad, jit
+from jax import jit
 import jax.numpy as jnp
-import jax.scipy as jsp
 import jax.lax as jl
 
 # Spn class definition, including methods

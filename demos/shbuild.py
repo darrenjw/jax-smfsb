@@ -3,9 +3,6 @@
 # build a model with SBML-shorthand
 
 import jax
-import jax.numpy as jnp
-import jax.scipy as jsp
-import jax.lax as jl
 
 import jsmfsb
 

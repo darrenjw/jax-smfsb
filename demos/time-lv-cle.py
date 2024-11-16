@@ -4,9 +4,6 @@
 
 import jax
 import jax.numpy as jnp
-import jax.scipy as jsp
-import jax.lax as jl
-from jax import grad, jit
 import jsmfsb
 import matplotlib.pyplot as plt
 import time
