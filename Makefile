@@ -21,10 +21,7 @@ publish:
 	python3 -m twine upload dist/*$(VERSION)*
 
 format:
-	black src/jsmfsb
-	black demos
-	black tests
-	black docs
+	black .
 
 check:
 	ruff check --select N
