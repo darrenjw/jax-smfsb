@@ -112,11 +112,11 @@ sds = jnp.nanstd(dmat, 0)
 print(sds)
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return ssi(dat) / sds
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 print("Main ABC-SMC run")
 
@@ -127,7 +127,7 @@ def dist(ss):
 
 
 def rdis(k, th):
-    return dist(sumStats(rmod(k, th)))
+    return dist(sum_stats(rmod(k, th)))
 
 
 def rper(k, th):

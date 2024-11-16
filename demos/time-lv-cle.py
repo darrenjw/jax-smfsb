@@ -16,13 +16,13 @@ step = lvmod.step_cle(0.01)
 k0 = jax.random.key(42)
 
 ## Start timer
-startTime = time.time()
+start_time = time.time()
 out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 20, step)
 # out = jsmfsb.sim_sampleMap(k0, 10000, lvmod.m, 0, 20, step)
-endTime = time.time()
+end_time = time.time()
 ## End timer
-elapsedTime = endTime - startTime
-print(f"\n\nElapsed time: {elapsedTime} seconds\n\n")
+elapsed_time = end_time - start_time
+print(f"\n\nElapsed time: {elapsed_time} seconds\n\n")
 
 out = jnp.where(out > 1000, 1000, out)
 import scipy as sp

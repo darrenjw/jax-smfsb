@@ -16,10 +16,10 @@ step = lvmod.step_gillespie()
 k0 = jax.random.key(42)
 print(step(k0, lvmod.m, 0, 30))
 
-stepC = lvmod.step_cle(0.01)
-print(stepC(k0, lvmod.m, 0, 30))
+step_c = lvmod.step_cle(0.01)
+print(step_c(k0, lvmod.m, 0, 30))
 
-out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 30, stepC)
+out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 30, step_c)
 out = jnp.where(out > 1000, 1000, out)
 import scipy as sp
 

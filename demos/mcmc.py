@@ -15,11 +15,11 @@ import scipy as sp
 import matplotlib.pyplot as plt
 
 
-def acf(x, lagMax):
-    return np.array([1] + [np.corrcoef(x[:-i], x[i:])[0, 1] for i in range(1, lagMax)])
+def acf(x, lag_max):
+    return np.array([1] + [np.corrcoef(x[:-i], x[i:])[0, 1] for i in range(1, lag_max)])
 
 
-def mcmcSummary(mat, fileName="mcmc.pdf", bins=30, lagMax=100, show=True, plot=True):
+def mcmc_summary(mat, file_name="mcmc.pdf", bins=30, lag_max=100, show=True, plot=True):
     n, p = mat.shape
     summ = sp.stats.describe(mat)
     med = np.median(mat, 0)
@@ -34,11 +34,11 @@ def mcmcSummary(mat, fileName="mcmc.pdf", bins=30, lagMax=100, show=True, plot=T
         fig, axes = plt.subplots(p, 3)
         for i in range(p):
             axes[i, 0].plot(range(n), mat[:, i], linewidth=0.1)
-            axes[i, 1].plot(range(lagMax), acf(mat[:, i], lagMax))
+            axes[i, 1].plot(range(lag_max), acf(mat[:, i], lag_max))
             axes[i, 1].set_ylim([-0.5, 1])
             axes[i, 1].axhline(y=0, color="g", linewidth=0.5)
             axes[i, 2].hist(mat[:, i], bins=bins)
-        fig.savefig(fileName)
+        fig.savefig(file_name)
     return summ
 
 

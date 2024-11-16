@@ -9,7 +9,7 @@ import jax.lax as jl
 
 import jsmfsb
 
-seirSH = """
+seir_sh = """
 @model:3.1.1=SEIR "SEIR Epidemic model"
  s=item, t=second, v=litre, e=item
 @compartments
@@ -31,10 +31,10 @@ seirSH = """
  gamma*I : gamma=0.5
 """
 
-seir = jsmfsb.shorthand_to_spn(seirSH)
-stepSeir = seir.step_gillespie()
+seir = jsmfsb.shorthand_to_spn(seir_sh)
+step_seir = seir.step_gillespie()
 k0 = jax.random.key(42)
-out = jsmfsb.sim_time_series(k0, seir.m, 0, 40, 0.05, stepSeir)
+out = jsmfsb.sim_time_series(k0, seir.m, 0, 40, 0.05, step_seir)
 
 import matplotlib.pyplot as plt
 
@@ -46,7 +46,7 @@ axis.legend(seir.n)
 fig.savefig("shbuild.pdf")
 
 # sim_sample
-out = jsmfsb.sim_sample(k0, 10000, seir.m, 0, 10, stepSeir)
+out = jsmfsb.sim_sample(k0, 10000, seir.m, 0, 10, step_seir)
 import scipy as sp
 
 print(sp.stats.describe(out))

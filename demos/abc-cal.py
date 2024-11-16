@@ -76,11 +76,11 @@ print(sds)
 print("Main run with calibrated summary stats")
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return ssi(dat) / sds
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 
 def dist(ss):
@@ -89,7 +89,7 @@ def dist(ss):
 
 
 def rdis(k, th):
-    return dist(sumStats(rmod(k, th)))
+    return dist(sum_stats(rmod(k, th)))
 
 
 p, d = jsmfsb.abc_run(k2, 1000000, rpr, rdis, batch_size=100000, verb=False)

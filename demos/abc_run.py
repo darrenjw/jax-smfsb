@@ -20,11 +20,11 @@ def rmod(k, th):
     return jax.random.normal(k, 250) * th[1] + th[0]
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return jnp.array([jnp.mean(dat), jnp.std(dat)])
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 
 def dist(ss):
@@ -33,7 +33,7 @@ def dist(ss):
 
 
 def rdis(k, th):
-    return dist(sumStats(rmod(k, th)))
+    return dist(sum_stats(rmod(k, th)))
 
 
 p, d = jsmfsb.abc_run(k2, 1000000, rpr, rdis)

@@ -16,7 +16,7 @@ def obsll(x, t, y, th):
     return jnp.sum(jsp.stats.norm.logpdf(y - x, scale=10))
 
 
-def simX(k, t0, th):
+def sim_x(k, t0, th):
     k1, k2 = jax.random.split(k)
     return jnp.array([jax.random.poisson(k1, 50), jax.random.poisson(k2, 100)]).astype(
         jnp.float32
@@ -29,7 +29,7 @@ def step(k, x, t, dt, th):
     return sf(k, x, t, dt)
 
 
-mll = jsmfsb.pf_marginal_ll(100, simX, 0, step, obsll, jsmfsb.data.lv_noise_10)
+mll = jsmfsb.pf_marginal_ll(100, sim_x, 0, step, obsll, jsmfsb.data.lv_noise_10)
 
 print("Test evals")
 k0 = jax.random.key(42)
@@ -50,7 +50,7 @@ thmat = jsmfsb.metropolis_hastings(
 
 print("MCMC done. Now processing the results...")
 
-mcmc.mcmcSummary(thmat, "pmmh.pdf")
+mcmc.mcmc_summary(thmat, "pmmh.pdf")
 
 print("All finished.")
 

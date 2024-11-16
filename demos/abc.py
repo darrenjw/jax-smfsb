@@ -31,11 +31,11 @@ def rmod(k, th):
     )
 
 
-def sumStats(dat):
+def sum_stats(dat):
     return dat
 
 
-ssd = sumStats(data)
+ssd = sum_stats(data)
 
 
 def dist(ss):
@@ -44,7 +44,7 @@ def dist(ss):
 
 
 def rdis(k, th):
-    return dist(sumStats(rmod(k, th)))
+    return dist(sum_stats(rmod(k, th)))
 
 
 k0 = jax.random.key(42)
