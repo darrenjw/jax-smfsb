@@ -1,5 +1,7 @@
-# The jax-smfsb tutorial
+The jax-smfsb tutorial
+----------------------
 
 Blah
+
 
 

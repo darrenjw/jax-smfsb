@@ -13,7 +13,7 @@ Welcome to jax-smfsb's documentation!
 Tutorial
 ========
 
-* :ref:`tutorial`
+* :doc:`The jax-smfsb tutorial <source/tutorial>`
 
 API Documentation
 =================
