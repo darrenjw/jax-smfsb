@@ -69,10 +69,10 @@ sir = jsmfsb.Spn(["S", "I", "R"], ["S->I", "I->R"],
 	[[1,1,0],[0,1,0]], [[0,2,0],[0,0,1]],
 	lambda x, t: jnp.array([0.3*x[0]*x[1]/200, 0.1*x[1]]),
 	[197.0, 3, 0])
-stepSir = sir.step_poisson()
-sample = jsmfsb.sim_sample(k0, 500, sir.m, 0, 20, stepSir)
+step_sir = sir.step_poisson()
+sample = jsmfsb.sim_sample(k0, 500, sir.m, 0, 20, step_sir)
 fig, axis = plt.subplots()
-axis.hist(sample[:,1],30)
+axis.hist(sample[:,1], 30)
 axis.set_title("Infected at time 20")
 plt.savefig("sIr.pdf")
 ```
@@ -95,7 +95,7 @@ import jax
 import jsmfsb
 import jax.numpy as jnp
 
-seirSH = """
+seir_sh = """
 @model:3.1.1=SEIR "SEIR Epidemic model"
  s=item, t=second, v=litre, e=item
 @compartments
@@ -117,10 +117,10 @@ seirSH = """
  gamma*I : gamma=0.5
 """
 
-seir = jsmfsb.shorthand_to_spn(seirSH)
-stepSeir = seir.step_gillespie()
+seir = jsmfsb.shorthand_to_spn(seir_sh)
+step_seir = seir.step_gillespie()
 k0 = jax.random.key(42)
-out = jsmfsb.sim_time_series(k0, seir.m, 0, 40, 0.05, stepSeir)
+out = jsmfsb.sim_time_series(k0, seir.m, 0, 40, 0.05, step_seir)
 
 import matplotlib.pyplot as plt
 fig, axis = plt.subplots()
