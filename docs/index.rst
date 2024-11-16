@@ -10,10 +10,13 @@ Welcome to jax-smfsb's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+Tutorial
+========
 
+* :ref:`tutorial`
 
-Indices and tables
-==================
+API Documentation
+=================
 
 * :ref:`genindex`
 * :ref:`modindex`
