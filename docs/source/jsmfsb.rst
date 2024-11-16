@@ -20,10 +20,10 @@ jsmfsb.sim module
    :undoc-members:
    :show-inheritance:
 
-jsmfsb.smfsbSbml module
+jsmfsb.smfsb_sbml module
 -----------------------
 
-.. automodule:: jsmfsb.smfsbSbml
+.. automodule:: jsmfsb.smfsb_sbml
    :members:
    :undoc-members:
    :show-inheritance:
