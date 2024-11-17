@@ -1,5 +1,7 @@
 # JAX-SMfSB (jsmfsb)
 
+https://readthedocs.org/projects/jax-smfsb/badge/
+
 ## SMfSB code in Python+JAX
 
 Python code relating to the book [Stochastic Modelling for Systems Biology, third edition](https://github.com/darrenjw/smfsb/).
