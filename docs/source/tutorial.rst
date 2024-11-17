@@ -146,11 +146,12 @@ associated with the book.
 Spatial simulation
 ------------------
 
-In addition to methods such as ``step_gillespie`` and ``step_cle`` for well-mixed simulation, ``Spn`` objects also have methods such as ``step_gillespie_1d`` and ``step_cle_2d`` for 1d and 2d spatially explicit simulation of reaction-diffusion processes on a regular grid. 
+In addition to methods such as ``step_gillespie`` and ``step_cle`` for well-mixed simulation, ``Spn`` objects also have methods such as ``step_gillespie_1d`` and ``step_cle_2d`` for 1d and 2d spatially explicit simulation of reaction-diffusion processes on a regular grid. These functions expect to be passed an array containing the diffusion coefficient for each species.
 
 1d simulation
 ~~~~~~~~~~~~~
 
+For 1d simulation, the state is a matrix with rows representing the levels of a given species on a 1d grid. The 1d transition kernels will update such a state. The function ``sim_time_series_1d`` will return a 3d array, with 2d slices representing the state at each time point. Slicing on the first index shows the spatio-temporal evolution of a given species.
 
 .. code:: python
 
@@ -170,7 +171,6 @@ In addition to methods such as ``step_gillespie`` and ``step_cle`` for well-mixe
    x1 = step_lv_1d(k0, x0, 0, 1)
    print(x1)
    out = jsmfsb.sim_time_series_1d(k0, x0, 0, T, 1, step_lv_1d, True)
-   # print(out)
 
    fig, axis = plt.subplots()
    for i in range(2):
@@ -179,12 +179,10 @@ In addition to methods such as ``step_gillespie`` and ``step_cle`` for well-mixe
        fig.savefig(f"step_gillespie_1d{i}.pdf")
 
 
-
-
 2d simulation
 ~~~~~~~~~~~~~
 
-
+For 2d simulation, the state is a 3d array containing the levels of each species on a 2d grid. The 2d transition kernels will update such a state. Slicing on the first index will show the 2d spatial distribution of a given species.
 
 .. code:: python
 
@@ -216,10 +214,12 @@ In addition to methods such as ``step_gillespie`` and ``step_cle`` for well-mixe
 Bayesian parameter inference
 ----------------------------
 
-
+In addition to providing tools for forward-simulation from stochastic kinetic models, the library also provides tools for conducting Bayesian parameter inference for stochastic kinetic models based on observed time course data. eg. given an observed (noisy) trajectory of one or more species from a given model, find rate constants that are most consistent with the observed data. The methods provided are simulation-based, or likelihood-free, based on either `approximate Bayesian computation <https://en.wikipedia.org/wiki/Approximate_Bayesian_computation>`__ (ABC) or (bootstrap) `particle marginal Metropolis-Hastings <https://darrenjw.wordpress.com/2011/05/17/the-particle-marginal-metropolis-hastings-pmmh-particle-mcmc-algorithm/>`__ (PMMH) particle MCMC.
 
 ABC
 ~~~
+
+In a very basic version of ABC, a candidate parameter vector is drawn from a prior distribution. This parameter vector is used in conjunction with a forward-simulation algorithm for the model of interest in order to generate a synthetic data set. This synthetic data set is compared against the real data set. If they are sufficiently "close", the originally sampled parameter vector will be kept as a sample from the posterior distribution, otherwise it will be rejected, and the process will start again. The function ``abc_run`` helps to scaffold this process. A complete example using simple euclidean distance between the real and synthetic trajectories is presented below.
 
 .. code:: python
 
@@ -279,11 +279,13 @@ ABC
    axes[1, 2].hist(postmat[:, 2], bins=30)
    fig.savefig("abc.pdf")
 
+Using simple euclidean distance between the trajectories is probably not a great idea. See the file ``abc-cal.py`` in the `demo directory <https://github.com/darrenjw/jax-smfsb/tree/main/demos>`__ for an example using more sophisticated summary statistics, calibrated via a pilot run to be on a consistent scale.
 
+   
 ABC-SMC
 ~~~~~~~
 
-
+Even using well-tuned summary statistics, naive rejection-based ABC is a rather inefficient algorithm. By combining ideas of ABC with those of `sequential Monte Carlo <https://en.wikipedia.org/wiki/Particle_filter>`__ (SMC) one can develop an ABC-SMC algorithm which gradually "zooms in" on promising parts of the parameter space using a sequence of updates in conjunction with a parameter purturbation kernel. The precise details are beyond the scope of this tutorial, but below is a complete example, using calibrated summary statistics from a pilot run. The function ``abc_smc`` performs the Bayesian update.
 
 .. code:: python
 
@@ -394,13 +396,10 @@ ABC-SMC
 
 
 
-
-
-
 PMMH particle MCMC
 ~~~~~~~~~~~~~~~~~~
 
-
+PMMH is in many ways the "gold standard" likelihood free inference strategy (at least in the case of noisy observations). By combining an unbiased estimate of the model's marginal likelihood (computed using a particle filter) with a Metropolis-Hastings MCMC algorithm, it is possible to generate a Markov chain with equilibrium distribution equal to the exact posterior distribution of the parameters given the observations. Again, the technical details are beyond the scope of this tutorial, but a complete example is given below. The key functions are ``pf_marginal_ll`` and ``metropolis_hastings``.
 
 .. code:: python
 
@@ -437,7 +436,7 @@ PMMH particle MCMC
 
    mcmc.mcmc_summary(thmat, "pmmh.pdf")
 
-
+Note that the summary stats and plots are produced using some additional functions defined in the file ``mcmc.py`` in the demo directory.
 
 
 Converting from the ``smfsb`` python package
