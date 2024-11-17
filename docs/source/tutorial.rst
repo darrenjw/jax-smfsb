@@ -8,10 +8,12 @@ We begin with non-spatial stochastic simulation.
 Non-spatial simulation
 ----------------------
 
+Standard algorithms for simulating the (stochastic) dynamics of biochemical networks assume that the system is well-mixed, and that spatial effects can be reasonably ignored.
+
 Using a model built-in to the library
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-First, see how to simulate a built-in (Lotka-Volterra predator-prey)
+First, let's see how to simulate a built-in (Lotka-Volterra predator-prey)
 model:
 
 .. code:: python
@@ -25,7 +27,7 @@ model:
    out = jsmfsb.sim_time_series(k0, lvmod.m, 0, 30, 0.1, step)
    assert(out.shape == (300, 2))
 
-Here we used the ``lv`` model. Other built-in models include ``id`` (immigration-death), ``bd`` (birth-death), ``dimer`` (dimerisation kinetics), ``mm`` (Michaelis-Menten enzyme kinetics) and ``sir`` (SIR epdiemic model). The models are of class ``Spn`` (stochastic Petri net), the main data type used in the package. Note the use of the ``step_gillespie`` method, defined on all ``Spn`` models, which returns a function for simulating from the transition kernel of the model, using the Gillespie algorithm. This function can be used with the ``sim_time_series`` function for simulating model trajectories on a regular time grid. Note that all stochastic simulation functions in this package take a `JAX random number key <https://jax.readthedocs.io/en/latest/random-numbers.html>`__ as their first argument. Alternative simulation algorithms include ``step_poisson`` (Poisson time-stepping), ``step_cle`` (Euler-Maruyama simulation from the associated chemical Langevin equation) and ``step_euler`` (Euler simulation from the continuous deterministic approximation to the model).
+Here we used the ``lv`` model. Other built-in models include ``id`` (immigration-death), ``bd`` (birth-death), ``dimer`` (dimerisation kinetics), ``mm`` (Michaelis-Menten enzyme kinetics) and ``sir`` (SIR epdiemic model). The models are of class ``Spn`` (stochastic Petri net), the main data type used in the package. Note the use of the ``step_gillespie`` method, defined on all ``Spn`` models, which returns a function for simulating from the transition kernel of the model, using the Gillespie algorithm. This function can be used with the ``sim_time_series`` function for simulating model trajectories on a regular time grid. Note that all stochastic simulation functions in this package take a `JAX random number key <https://jax.readthedocs.io/en/latest/random-numbers.html>`__ as their first argument. JAX uses an explict, splittable random number generator. Alternative simulation algorithms include ``step_poisson`` (Poisson time-stepping), ``step_cle`` (Euler-Maruyama simulation from the associated chemical Langevin equation) and ``step_euler`` (Euler simulation from the continuous deterministic approximation to the model).
 
 If you have ``matplotlib`` installed (``pip install matplotlib``), then
 you can also plot the results with:
@@ -208,7 +210,7 @@ For 2d simulation, the state is a 3d array containing the levels of each species
        axis.set_title(lv.n[i])
        fig.savefig(f"step_cle_2df{i}.pdf")
 
-
+Note that on fine 2d grids, approximate simulation using ``step_cle_2d`` is much typically much faster than exact simulation from the reaction diffusion master equation (RDME) using ``step_gillespie_2d``.
     
 
 Bayesian parameter inference
