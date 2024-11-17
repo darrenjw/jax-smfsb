@@ -1,6 +1,6 @@
 # JAX-SMfSB (jsmfsb)
 
-https://readthedocs.org/projects/jax-smfsb/badge/
+![](https://readthedocs.org/projects/jax-smfsb/badge/)
 
 ## SMfSB code in Python+JAX
 
