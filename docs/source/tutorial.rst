@@ -460,20 +460,8 @@ For further information, see the `demo
 directory <https://github.com/darrenjw/jax-smfsb/tree/main/demos>`__ and
 the `API
 documentation <https://jax-smfsb.readthedocs.io/en/latest/index.html>`__.
-Within the demos directory, see
-`shbuild.py <https://github.com/darrenjw/jax-smfsb/tree/main/demos/shbuild.py>`__
-for an example of how to specify a (SEIR epidemic) model using
-SBML-shorthand and
-`step_cle_2df.py <https://github.com/darrenjw/jax-smfsb/tree/main/demos/step_cle_2df.py>`__
-for a 2-d reaction-diffusion simulation. For parameter inference (from
-time course data), see
-`abc-cal.py <https://github.com/darrenjw/jax-smfsb/tree/main/demos/abc-cal.py>`__
-for ABC inference,
-`abc_smc.py <https://github.com/darrenjw/jax-smfsb/tree/main/demos/abc_smc.py>`__
-for ABC-SMC inference and
-`pmmh.py <https://github.com/darrenjw/jax-smfsb/tree/main/demos/pmmh.py>`__
-for particle marginal Metropolis-Hastings MCMC-based inference. There
-are many other demos besides these.
+
+
 
 
 
