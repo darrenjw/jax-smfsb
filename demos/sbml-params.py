@@ -58,6 +58,7 @@ seir.lp[2]["gamma"] = 0.1
 
 # Now re-run the simulation with the updated parameters:
 
+step_seir = seir.step_gillespie() # why do we need this?!
 out = jsmfsb.sim_time_series(k, seir.m, 0, 50, 0.05, step_seir)
 
 fig, axis = plt.subplots()
