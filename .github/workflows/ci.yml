@@ -23,3 +23,7 @@ jobs:
       - name: Run linter
         run: |
           uvx -p 3.11 black --check .
+
+      - name: Run tests
+        run: |
+          uvx -p 3.11 --with jsmfsb pytest
