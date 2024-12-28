@@ -58,7 +58,7 @@ seir.lp[2]["gamma"] = 0.1
 
 # Now re-run the simulation with the updated parameters:
 
-step_seir = seir.step_gillespie() # First need to re-build step function
+step_seir = seir.step_gillespie()  # First need to re-build step function
 out = jsmfsb.sim_time_series(k, seir.m, 0, 50, 0.05, step_seir)
 
 fig, axis = plt.subplots()
@@ -66,8 +66,7 @@ for i in range(len(seir.m)):
     axis.plot(jnp.arange(0, 50, 0.05), out[:, i])
 
 axis.legend(seir.n)
-fig.savefig("sbml-params-1.pdf"
-            )
+fig.savefig("sbml-params-1.pdf")
 
 
 # eof
