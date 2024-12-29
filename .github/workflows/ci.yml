@@ -26,4 +26,9 @@ jobs:
 
       - name: Run tests
         run: |
-          uvx -p 3.11 --with jax --with jsmfsb pytest
+          uv venv
+          source .venv/bin/activate
+          uv pip install jax pytest
+          uv pip install .
+          pytest
+
