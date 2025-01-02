@@ -27,6 +27,15 @@ check:
 	ruff check --select N
 	ruff check
 
+commit:
+	make format
+	make test
+	ruff check --select N
+	git commit -a
+	git push
+	git pull
+	git log|less
+
 edit:
 	emacs Makefile *.toml *.md src/jsmfsb/*.py demos/*.py tests/*.py &
 

@@ -8,6 +8,11 @@
 # After 1 time unit, the mean should be 99.00498 and the
 #   sd should be 4.54834.
 
+
+# NOTE: this script was written to identify a bug, which turned out to be
+#   in sim_time_series, and has since been fixed. This code is now for
+#   historical interest only. Will be removed from the repo at some point.
+
 import time
 import jax
 import jsmfsb
@@ -60,6 +65,8 @@ print(y_score)
 # Yes! Somehow a problem using sim_time_series...
 # Why?! Because the initial state isn't included in the output,
 # so the output is shifted by one relative to what it should be!
+
+# NOTE: this bug is now fixed, and the tests are all fine.
 
 
 # eof

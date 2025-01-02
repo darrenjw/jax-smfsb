@@ -45,10 +45,10 @@ def test_model(n, file_stem):
 
 if __name__ == "__main__":
     print("A demo test run. Use pytest to run the full suite properly.")
-    N = 1000  # TODO: bump back up to 1000
+    N = 1000
     print(test_model(N, "stochastic/00001/dsmts-001-01"))
-    # print(test_model(N, "stochastic/00020/dsmts-002-01"))
-    # print(test_model(N, "stochastic/00030/dsmts-003-01"))
+    print(test_model(N, "stochastic/00020/dsmts-002-01"))
+    print(test_model(N, "stochastic/00030/dsmts-003-01"))
     print("Done.")
 
 
