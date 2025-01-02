@@ -30,5 +30,6 @@ jobs:
           source .venv/bin/activate
           uv pip install jax pytest
           uv pip install .
-          pytest
+          pytest tests
+
 
