@@ -29,8 +29,8 @@ check:
 
 commit:
 	make format
-	make test
 	ruff check --select N
+	make test
 	git commit -a
 	git push
 	git pull
