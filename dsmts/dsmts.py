@@ -1,4 +1,4 @@
-# dsmts.pyx
+# dsmts.py
 # Utilities for running the DSMTS against smfsb
 
 import jsmfsb
@@ -16,17 +16,24 @@ def test_model(n, file_stem):
     sd = pd.read_csv(sd_file).to_numpy()[:, 1:]
     sd = jnp.array(sd).astype(jnp.float64)
     spn = jsmfsb.mod_to_spn(model_file)
-    u = len(spn.n)
-    sx = jnp.zeros((51, u))
-    sxx = jnp.zeros((51, u))
     step = spn.step_gillespie()  # testing the exact simulator
+    u = len(spn.n)
+    sx0 = jnp.zeros((51, u))
+    sxx0 = jnp.zeros((51, u))
+    state0 = [sx0, sxx0]
+
+    def update(state, key):
+        [sx0, sxx0] = state
+        out = jsmfsb.sim_time_series(key, spn.m, 0, 50, 1, step)
+        sx = sx0 + out
+        si = out - mean
+        sxx = sxx0 + (si * si)
+        return ([sx, sxx], 0)
+
     k0 = jax.random.key(42)
     keys = jax.random.split(k0, n)
-    for k in keys:
-        out = jsmfsb.sim_time_series(k, spn.m, 0, 50, 1, step)
-        sx = sx + out
-        si = out - mean
-        sxx = sxx + (si * si)
+    state, _ = jax.lax.scan(update, state0, keys)
+    [sx, sxx] = state
     sample_mean = sx / n
     z_scores = jnp.sqrt(n) * (sample_mean - mean) / sd
     sts = sxx / n
