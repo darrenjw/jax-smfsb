@@ -5,7 +5,7 @@ import dsmts
 import jax.numpy as jnp
 
 N = 10000
-N = 1000 # TODO: bump back up!
+N = 1000  # TODO: bump back up!
 
 
 def check_model(file_stem):
