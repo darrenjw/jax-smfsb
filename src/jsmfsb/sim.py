@@ -5,6 +5,7 @@
 
 import jax
 from jax import jit
+import jax.numpy as jnp
 import jax.lax as jl
 
 
@@ -47,7 +48,7 @@ def sim_time_series(key, x0, t0, tt, dt, step_fun):
     >>> stepLv = lv.step_gillespie()
     >>> jsmfsb.sim_time_series(jax.random.key(42), lv.m, 0, 100, 0.1, stepLv)
     """
-    n = int((tt - t0) // dt) + 1
+    n = int((tt - t0) // dt)
     keys = jax.random.split(key, n)
 
     @jit
@@ -58,7 +59,7 @@ def sim_time_series(key, x0, t0, tt, dt, step_fun):
         return (x, t), x
 
     _, mat = jl.scan(advance, (x0, t0), keys)
-    return mat
+    return jnp.insert(mat, 0, x0, 0)
 
 
 def sim_sample(key, n, x0, t0, deltat, step_fun, batch_size=None):
