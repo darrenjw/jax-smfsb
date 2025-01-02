@@ -11,6 +11,17 @@ def test_simts():
     k0 = jax.random.key(42)
     out = jsmfsb.sim_time_series(k0, lv.m, 0, 10, 0.1, step)
     assert out.shape == (100, 2)
+    assert (out[0, :] == lv.m).all()
+
+
+def test_simts2():
+    lv = jsmfsb.models.lv()
+    step = lv.step_gillespie()
+    k0 = jax.random.key(42)
+    out = jsmfsb.sim_time_series(k0, lv.m, 0, 5, 1, step)
+    assert out.shape == (6, 2)
+    assert (out[0, :] == lv.m).all()
+    assert out[4, 1] >= 0
 
 
 def test_simsample():

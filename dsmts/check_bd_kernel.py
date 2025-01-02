@@ -45,7 +45,7 @@ sxx = 0
 keys = jax.random.split(k0, N)
 for k in keys:
     out = jsmfsb.sim_time_series(k, bd.m, 0, 2, 1, step)
-    assert(out.shape == (3, 1))
+    assert out.shape == (3, 1)
     sx = sx + out[1, 0]
     si = out[1, 0] - true_mean
     sxx = sxx + (si * si)
@@ -63,4 +63,3 @@ print(y_score)
 
 
 # eof
-
