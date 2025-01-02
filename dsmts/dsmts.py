@@ -12,7 +12,9 @@ def test_model(n, file_stem):
     mean_file = file_stem + "-mean.csv"
     sd_file = file_stem + "-sd.csv"
     mean = pd.read_csv(mean_file).to_numpy()[:, 1:]
+    mean = jnp.array(mean).astype(jnp.float64)
     sd = pd.read_csv(sd_file).to_numpy()[:, 1:]
+    sd = jnp.array(sd).astype(jnp.float64)
     spn = jsmfsb.mod_to_spn(model_file)
     u = len(spn.n)
     sx = jnp.zeros((51, u))
@@ -32,7 +34,9 @@ def test_model(n, file_stem):
     fails = jnp.array([jnp.sum(abs(z_scores) > 3), jnp.sum(abs(y_scores) > 5)])
     if jnp.sum(fails) > 0:
         print(str(fails) + " FAILS for " + file_stem)
+        print(sample_mean)
         print(z_scores)
+        print(sts)
         print(y_scores)
     return fails
 
@@ -41,10 +45,10 @@ def test_model(n, file_stem):
 
 if __name__ == "__main__":
     print("A demo test run. Use pytest to run the full suite properly.")
-    N = 100
+    N = 1000 # TODO: bump back up to 1000
     print(test_model(N, "stochastic/00001/dsmts-001-01"))
-    print(test_model(N, "stochastic/00020/dsmts-002-01"))
-    print(test_model(N, "stochastic/00030/dsmts-003-01"))
+    #print(test_model(N, "stochastic/00020/dsmts-002-01"))
+    #print(test_model(N, "stochastic/00030/dsmts-003-01"))
     print("Done.")
 
 
