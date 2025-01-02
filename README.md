@@ -54,6 +54,6 @@ You can view this package on [GitHub](https://github.com/darrenjw/jax-smfsb) or 
 If you have problems with this software, please start an [Issue](https://github.com/darrenjw/jax-smfsb/issues) or a [Discussion](https://github.com/darrenjw/jax-smfsb/discussions). Pull requests containing bug fixes are welcome.
 
 
-**Copyright (C) 2024 Darren J Wilkinson**
+**Copyright (C) 2024-2025 Darren J Wilkinson**
 
 
