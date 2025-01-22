@@ -26,8 +26,12 @@ classifiers = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/jsmfsb"]
 
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+  'jax',
+]
+
 [project.urls]
 Homepage = "https://github.com/darrenjw/jax-smfsb"
 Documentation = "https://jax-smfsb.readthedocs.io/"
 Issues = "https://github.com/darrenjw/jax-smfsb/issues"
-
