@@ -12,9 +12,9 @@ def test_model(n, file_stem):
     mean_file = file_stem + "-mean.csv"
     sd_file = file_stem + "-sd.csv"
     mean = pd.read_csv(mean_file).to_numpy()[:, 1:]
-    mean = jnp.array(mean).astype(jnp.float64)
+    mean = jnp.array(mean).astype(jnp.float32)
     sd = pd.read_csv(sd_file).to_numpy()[:, 1:]
-    sd = jnp.array(sd).astype(jnp.float64)
+    sd = jnp.array(sd).astype(jnp.float32)
     spn = jsmfsb.mod_to_spn(model_file)
     step = spn.step_gillespie()  # testing the exact simulator
     u = len(spn.n)
