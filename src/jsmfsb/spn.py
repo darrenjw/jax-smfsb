@@ -113,8 +113,8 @@ class Spn:
             h = self.h(x, t)
             h0 = jnp.sum(h)
             key, k1, k2 = jax.random.split(key, 3)
-            t = jnp.where(h0 > max_haz, 1e90, t)
-            t = jnp.where(h0 < min_haz, 1e90, t + jax.random.exponential(k1) / h0)
+            t = jnp.where(h0 > max_haz, 1e30, t)
+            t = jnp.where(h0 < min_haz, 1e30, t + jax.random.exponential(k1) / h0)
             j = jax.random.choice(k2, v, p=h / h0)
             xn = jnp.add(x, sto[:, j])
             return (key, x, xn, t)
@@ -378,8 +378,8 @@ class Spn:
             hds = jnp.apply_along_axis(jnp.sum, 0, hd)
             hdss = hds.sum()
             h0 = hrss + hdss
-            t = jnp.where(h0 > max_haz, 1e90, t)
-            t = jnp.where(h0 < min_haz, 1e90, t + jax.random.exponential(k1) / h0)
+            t = jnp.where(h0 > max_haz, 1e30, t)
+            t = jnp.where(h0 < min_haz, 1e30, t + jax.random.exponential(k1) / h0)
 
             def diffuse(key, x):
                 n = x.shape[1]
@@ -482,8 +482,8 @@ class Spn:
             hds = jnp.sum(hd, axis=(0))
             hdss = hds.sum()
             h0 = hrss + hdss
-            t = jnp.where(h0 > max_haz, 1e90, t)
-            t = jnp.where(h0 < min_haz, 1e90, t + jax.random.exponential(k1) / h0)
+            t = jnp.where(h0 > max_haz, 1e30, t)
+            t = jnp.where(h0 < min_haz, 1e30, t + jax.random.exponential(k1) / h0)
 
             def diffuse(key, x):
                 uu, m, n = x.shape
