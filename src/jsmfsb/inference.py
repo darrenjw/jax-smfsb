@@ -297,7 +297,7 @@ def abc_run(key, n, rprior, rdist, batch_size=None, verb=False):
     >>> def rdis(k, th):
     >>>   return dist(sumStats(rmod(k, th)))
     >>>
-    >>> smfsb.abc_run(k2, 100, rpr, rdis)
+    >>> jsmfsb.abc_run(k2, 100, rpr, rdis)
     """
 
     @jit

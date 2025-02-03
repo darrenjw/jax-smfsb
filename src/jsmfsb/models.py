@@ -90,7 +90,7 @@ def id(th=[1, 0.1]):
 
     Examples
     --------
-    >>> import smfsb
+    >>> import jsmfsb
     >>> import jax
     >>> id = jsmfsb.models.id()
     >>> step = id.step_gillespie()

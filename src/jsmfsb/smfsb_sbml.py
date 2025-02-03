@@ -28,8 +28,8 @@ def mod_to_spn(filename, verb=False):
 
     Examples
     --------
-    >>> import smfsb
-    >>> myMod = smfsb.mod2spn("myModel.mod")
+    >>> import jsmfsb
+    >>> myMod = jsmfsb.mod2spn("myModel.mod")
     >>> step = myMod.step_gillespie()
     """
     try:
@@ -65,11 +65,11 @@ def shorthand_to_spn(sh_string, verb=False):
 
     Examples
     --------
-    >>> import smfsb
+    >>> import jsmfsb
     >>> file = open('myModel.mod', 'r')
     >>> myModStr = file.read()
     >>> file.close()
-    >>> myMod = smfsb.sh2spn(myModStr)
+    >>> myMod = jsmfsb.sh2spn(myModStr)
     >>> step = myMod.step_gillespie()
     """
     p = mod2sbml.Parser()
@@ -100,8 +100,8 @@ def file_to_spn(filename, verb=False):
 
     Examples
     --------
-    >>> import smfsb
-    >>> myMod = smfsb.mod2spn("myModel.xml")
+    >>> import jsmfsb
+    >>> myMod = jsmfsb.mod2spn("myModel.xml")
     >>> step = myMod.step_gillespie()
     """
     d = libsbml.readSBML(filename)
@@ -130,11 +130,11 @@ def model_to_spn(m, verb=False):
 
     Examples
     --------
-    >>> import smfsb
+    >>> import jsmfsb
     >>> import libsbml
     >>> d = libsbml.readSBML("myModel.xml")
     >>> m = d.getModel()
-    >>> myMod = smfsb.model_to_spn(m)
+    >>> myMod = jsmfsb.model_to_spn(m)
     >>> step = myMod.step_gillespie()
     """
     # Species and initial amounts
