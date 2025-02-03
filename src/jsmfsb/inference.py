@@ -275,6 +275,7 @@ def abc_run(key, n, rprior, rdist, batch_size=None, verb=False):
     Examples
     --------
     >>> import jsmfsb
+    >>> import jax
     >>> import jax.numpy as jnp
     >>> import jax.scipy as jsp
     >>> k0 = jax.random.key(42)
