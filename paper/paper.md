@@ -24,6 +24,7 @@ date: 19 September 2024
 bibliography: paper.bib
 ---
 
+
 # Summary
 
 Many biological processes, and especially molecular biochemical processes, exhibit non-trivial stochasticity in their dynamical behaviour [@Wilkinson2009]. The popular textbook *Stochastic modelling for systems biology, third edition* [@Wilkinson2018] describes the stochastic approach to modelling and simulation of biochemical processes, and how to do Bayesian inference for the parameters of such models using time course data [@Golightly2011]. `jax-smfsb` provides a fast and efficient implementation of all of the algorithms described in @Wilkinson2018, able to effectively exploit multiple cores and GPUs, leading to performance suitable for the analysis of non-trivial research problems.
