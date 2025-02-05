@@ -1,0 +1,26 @@
+cff-version: "1.2.0"
+authors:
+- family-names: Wilkinson
+  given-names: Darren J.
+doi: 10.5281/zenodo.14803573
+message: If you use this software, please cite our article in the
+  Journal of Open Source Software.
+preferred-citation:
+  authors:
+  - family-names: Wilkinson
+    given-names: Darren J.
+  date-published: 2025-02-05
+  doi: 10.21105/joss.07491
+  issn: 2475-9066
+  issue: 106
+  journal: Journal of Open Source Software
+  publisher:
+    name: Open Journals
+  start: 7491
+  title: "jax-smfsb: A Python library for stochastic systems biology
+    modelling and inference"
+  type: article
+  url: "https://joss.theoj.org/papers/10.21105/joss.07491"
+  volume: 10
+title: "jax-smfsb: A Python library for stochastic systems biology
+  modelling and inference"
