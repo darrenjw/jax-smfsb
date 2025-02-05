@@ -1,5 +1,6 @@
 # JAX-SMfSB (jsmfsb)
 
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.07491/status.svg)](https://doi.org/10.21105/joss.07491)
 [![](https://readthedocs.org/projects/jax-smfsb/badge/)](https://jax-smfsb.readthedocs.io/en/latest/index.html)
 [![](https://github.com/darrenjw/jax-smfsb/actions/workflows/ci.yml/badge.svg)](https://github.com/darrenjw/jax-smfsb/actions)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
