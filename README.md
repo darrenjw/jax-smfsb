@@ -50,6 +50,12 @@ For further information, see the [demo directory](https://github.com/darrenjw/ja
 
 You can view this package on [GitHub](https://github.com/darrenjw/jax-smfsb) or [PyPI](https://pypi.org/project/jsmfsb/).
 
+### Citing
+
+If you use this software in your research, please cite the paper:
+
+Wilkinson, D. J. (2025). [jax-smfsb: A Python library for stochastic systems biology modelling and inference](https://doi.org/10.21105/joss.07491). *Journal of Open Source Software*, **10**(106), 7491.
+
 ### Contributing
 
 If you have problems with this software, please start an [Issue](https://github.com/darrenjw/jax-smfsb/issues) or a [Discussion](https://github.com/darrenjw/jax-smfsb/discussions). Pull requests containing bug fixes are welcome.
