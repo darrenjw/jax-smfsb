@@ -1,5 +1,5 @@
 ---
-title: 'jax-smfsb: A python library for stochastic systems biology modelling and inference'
+title: 'jax-smfsb: A Python library for stochastic systems biology modelling and inference'
 tags:
   - Python
   - JAX
