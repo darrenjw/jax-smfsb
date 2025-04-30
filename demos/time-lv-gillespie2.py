@@ -5,17 +5,17 @@
 import jax
 import jax.numpy as jnp
 import jsmfsb
-import scipy as sp
 import matplotlib.pyplot as plt
+import scipy as sp
 import time
 
 lvmod = jsmfsb.models.lv()
-step = lvmod.step_cle(0.01)
+step = lvmod.step_gillespie()
 k0 = jax.random.key(42)
 
 ## Start timer
 start_time = time.time()
-out = jsmfsb.sim_sample(k0, 10000, lvmod.m, 0, 20, step, batch_size=100).block_until_ready()
+out = jsmfsb.sim_sample(k0, 100000, lvmod.m, 0, 20, step, batch_size=100).block_until_ready()
 end_time = time.time()
 ## End timer
 elapsed_time = end_time - start_time
@@ -27,7 +27,7 @@ print(sp.stats.describe(out))
 fig, axes = plt.subplots(2, 1)
 for i in range(2):
     axes[i].hist(out[:, i], bins=50)
-fig.savefig("time-lv-cle.pdf")
+fig.savefig("time-lv-gillespie2.pdf")
 
 
 # eof
