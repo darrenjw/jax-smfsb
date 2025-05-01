@@ -8,6 +8,11 @@ import jsmfsb
 import matplotlib.pyplot as plt
 import scipy as sp
 import time
+import multiprocessing
+
+print(str(jax.devices()))
+cores = multiprocessing.cpu_count()
+print(f"{cores} cores detected")
 
 lvmod = jsmfsb.models.lv()
 step = lvmod.step_gillespie()
