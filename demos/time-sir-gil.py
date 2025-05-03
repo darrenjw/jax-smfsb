@@ -31,7 +31,9 @@ out = jsmfsb.sim_time_series(k0, sir.m, 0, 40, 0.05, step_sir)
 print("Starting timed run now")
 # start timer
 start_time = time.time()
-out = jsmfsb.sim_sample(k0, 10000, sir.m, 0, 20, step_sir, batch_size=100).block_until_ready()
+out = jsmfsb.sim_sample(
+    k0, 10000, sir.m, 0, 20, step_sir, batch_size=100
+).block_until_ready()
 # end timer
 end_time = time.time()
 elapsed = end_time - start_time
