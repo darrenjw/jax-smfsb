@@ -29,7 +29,7 @@ def mod_to_spn(filename, verb=False):
     Examples
     --------
     >>> import jsmfsb
-    >>> myMod = jsmfsb.mod2spn("myModel.mod")
+    >>> myMod = jsmfsb.mod_to_spn("myModel.mod")
     >>> step = myMod.step_gillespie()
     """
     try:
@@ -69,7 +69,7 @@ def shorthand_to_spn(sh_string, verb=False):
     >>> file = open('myModel.mod', 'r')
     >>> myModStr = file.read()
     >>> file.close()
-    >>> myMod = jsmfsb.sh2spn(myModStr)
+    >>> myMod = jsmfsb.shorthand_to_spn(myModStr)
     >>> step = myMod.step_gillespie()
     """
     p = mod2sbml.Parser()
@@ -101,7 +101,7 @@ def file_to_spn(filename, verb=False):
     Examples
     --------
     >>> import jsmfsb
-    >>> myMod = jsmfsb.mod2spn("myModel.xml")
+    >>> myMod = jsmfsb.file_to_spn("myModel.xml")
     >>> step = myMod.step_gillespie()
     """
     d = libsbml.readSBML(filename)
