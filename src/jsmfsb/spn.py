@@ -831,10 +831,7 @@ class Spn:
 
         def diffuse(key, m):
             n = m.shape[1]
-            m = (
-                m
-                + (jnp.diag(d) @ laplacian(m)) * dt
-            )
+            m = m + (jnp.diag(d) @ laplacian(m)) * dt
             m = rectify(m)
             return m
 
@@ -932,10 +929,7 @@ class Spn:
         def diffuse(key, a):
             uu, m, n = a.shape
             k1, k2 = jax.random.split(key)
-            a = (
-                a
-                + (jnp.apply_along_axis(lambda xi: xi * d, 0, laplacian(a))) * dt
-            )
+            a = a + (jnp.apply_along_axis(lambda xi: xi * d, 0, laplacian(a))) * dt
             a = rectify(a)
             return a
 
