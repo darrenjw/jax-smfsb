@@ -212,11 +212,12 @@ class Spn:
         -------
         A function which can be used to advance the state of the SPN
         model by using an Euler method with step size ‘dt’. The
-        function closure has interface ‘function(x0, t0, deltat)’, where
+        function closure has interface ‘function(key, x0, t0, deltat)’, where
         ‘x0’ and ‘t0’ represent the initial state and time, and ‘deltat’
         represents the amount of time by which the process should be
-        advanced. The function closure returns a vector representing the
-        simulated state of the system at the new time.
+        advanced. The random key, key, is ignored. The function closure
+        returns a vector representing the simulated state of the system
+        at the new time.
 
         Examples
         --------
@@ -755,6 +756,204 @@ class Spn:
                 # TODO: this would be neater (and maybe faster) with "vmap"
                 stacked = jnp.stack((hr, dwt))  # (2, v, m, n)
                 x = x + jnp.apply_along_axis(react, 0, stacked.reshape(2 * v, m, n))
+                x = rectify(x)
+                return (x, t), x
+
+            _, out = jl.scan(advance, (x0, t0), keys)
+            return out[tt - 1]
+
+        step = jit(step, static_argnums=(3,))
+        return step
+
+    def step_euler_1d(self, d, dt=0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        forward Euler discretisation of the reaction-diffusion on a 1D regular grid
+
+        This method creates a function for advancing the state of an SPN
+        model using a simple Euler discretisation of the reaction-diffusion on a
+        1D regular grid. The resulting function (closure) can be used in
+        conjunction with other functions (such as `sim_time_series_1d`) for
+        simulating realisations of SPN models in space and time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore twice this value (as it can leave to
+          the left or the right).
+        dt : float
+          Time step for the Euler discretisation.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using a simple forward Euler algorithm. The function
+        closure has parameters `key`, `x0`, `t0`, `deltat`, where `key` is a
+        JAX random number key (which is ignored), `x0` is
+        a matrix with rows corresponding to species and columns
+        corresponding to voxels, representing the initial condition, `t0`
+        represents the initial state and time, and `deltat` represents the
+        amount of time by which the process should be advanced. The
+        function closure returns a matrix representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> import jax.numpy as jnp
+        >>> lv = jsmfsb.models.lv()
+        >>> stepLv1d = lv.step_euler_1d(jnp.array([0.6,0.6]))
+        >>> N = 20
+        >>> x0 = jnp.zeros((2,N))
+        >>> x0 = x0.at[:,int(N/2)].set(lv.m)
+        >>> k0 = jax.random.key(42)
+        >>> stepLv1d(k0, x0, 0, 1)
+        """
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
+        sdt = np.sqrt(dt)
+
+        def forward(m):
+            return jnp.roll(m, -1, axis=1)
+
+        def back(m):
+            return jnp.roll(m, +1, axis=1)
+
+        def laplacian(m):
+            return forward(m) + back(m) - 2 * m
+
+        def rectify(m):
+            return jnp.where(m < 0, 0, m)
+
+        def diffuse(key, m):
+            n = m.shape[1]
+            m = (
+                m
+                + (jnp.diag(d) @ laplacian(m)) * dt
+            )
+            m = rectify(m)
+            return m
+
+        def step(key, x0, t0, deltat):
+            n = x0.shape[1]
+            tt = int(deltat // dt) + 1
+            keys = jax.random.split(key, tt)
+
+            def advance(state, key):
+                k1, k2 = jax.random.split(key)
+                x, t = state
+                t = t + dt
+                x = diffuse(k1, x)
+                hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                x = x + sto @ (hr * dt)
+                x = rectify(x)
+                return (x, t), x
+
+            _, out = jl.scan(advance, (x0, t0), keys)
+            return out[tt - 1]
+
+        step = jit(step, static_argnums=(3,))
+        return step
+
+    def step_euler_2d(self, d, dt=0.01):
+        """Create a function for advancing the state of an SPN by using a simple
+        forward Euler discretisation of the reaction-diffusion on a 2D regular grid
+
+        This method creates a function for advancing the state of an SPN
+        model using a simple Euler discretisation of the reaction-diffusion on a
+        2D regular grid. The resulting function (closure) can be used in
+        conjunction with other functions (such as `sim_time_series_2d`) for
+        simulating realisations of SPN models in space and time.
+
+        Parameters
+        ----------
+        d : array
+          A vector of diffusion coefficients - one coefficient for each
+          reacting species, in order. The coefficient is the reaction
+          rate for a reaction for a molecule moving into an adjacent
+          compartment. The hazard for a given molecule leaving the
+          compartment is therefore four times this value (as it can leave
+          in one of 4 directions).
+        dt : float
+          Time step for the Euler-Maruyama discretisation.
+
+        Returns
+        -------
+        A function which can be used to advance the state of the SPN
+        model by using a simple Euler-Maruyama algorithm. The function
+        closure has parameters `key` (ignored), `x0`, `t0`, `deltat`, where `x0` is
+        a 3d array with indices species, then rows and columns
+        corresponding to voxels, representing the initial condition, `t0`
+        represents the initial state and time, and `deltat` represents the
+        amount of time by which the process should be advanced. The
+        function closure returns a matrix representing the simulated state
+        of the system at the new time.
+
+        Examples
+        --------
+        >>> import jsmfsb.models
+        >>> import jax
+        >>> import jax.numpy as jnp
+        >>> lv = jsmfsb.models.lv()
+        >>> stepLv2d = lv.step_euler_2d(jnp.array([0.6,0.6]))
+        >>> M = 15
+        >>> N = 20
+        >>> x0 = jnp.zeros((2,M,N))
+        >>> x0 = x0.at[:,int(M/2),int(N/2)].set(lv.m)
+        >>> k0 = jax.random.key(42)
+        >>> stepLv2d(k0, x0, 0, 1)
+        """
+        sto = (self.post - self.pre).T
+        u, v = sto.shape
+        sdt = np.sqrt(dt)
+
+        def left(a):
+            return jnp.roll(a, -1, axis=1)
+
+        def right(a):
+            return jnp.roll(a, +1, axis=1)
+
+        def up(a):
+            return jnp.roll(a, -1, axis=2)
+
+        def down(a):
+            return jnp.roll(a, +1, axis=2)
+
+        def laplacian(a):
+            return left(a) + right(a) + up(a) + down(a) - 4 * a
+
+        def rectify(a):
+            return jnp.where(a < 0, 0, a)
+
+        def diffuse(key, a):
+            uu, m, n = a.shape
+            k1, k2 = jax.random.split(key)
+            a = (
+                a
+                + (jnp.apply_along_axis(lambda xi: xi * d, 0, laplacian(a))) * dt
+            )
+            a = rectify(a)
+            return a
+
+        def react(hri):
+            return sto @ (hri * dt)
+
+        def step(key, x0, t0, deltat):
+            uu, m, n = x0.shape
+            tt = int(deltat // dt) + 1
+            keys = jax.random.split(key, tt)
+
+            def advance(state, key):
+                k1, k2 = jax.random.split(key)
+                x, t = state
+                t = t + dt
+                x = diffuse(k1, x)
+                hr = jnp.apply_along_axis(lambda xi: self.h(xi, t), 0, x)
+                x = x + jnp.apply_along_axis(react, 0, hr)
                 x = rectify(x)
                 return (x, t), x
 

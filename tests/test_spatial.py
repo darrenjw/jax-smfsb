@@ -76,5 +76,27 @@ def test_step_cle_2d():
     x1 = step_lv_2d(k0, x0, 0, 1)
     assert x1.shape == (2, m, n)
 
+def test_step_euler_1d():
+    n = 20
+    x0 = jnp.zeros((2, n))
+    lv = jsmfsb.models.lv()
+    x0 = x0.at[:, int(n / 2)].set(lv.m)
+    step_lv_1d = lv.step_euler_1d(jnp.array([0.6, 0.6]))
+    k0 = jax.random.key(42)
+    x1 = step_lv_1d(k0, x0, 0, 1)
+    assert x1.shape == (2, n)
+
+
+def test_step_euler_2d():
+    m = 16
+    n = 20
+    x0 = jnp.zeros((2, m, n))
+    lv = jsmfsb.models.lv()
+    x0 = x0.at[:, int(m / 2), int(n / 2)].set(lv.m)
+    step_lv_2d = lv.step_euler_2d(jnp.array([0.6, 0.6]))
+    k0 = jax.random.key(42)
+    x1 = step_lv_2d(k0, x0, 0, 1)
+    assert x1.shape == (2, m, n)
+
 
 # eof
