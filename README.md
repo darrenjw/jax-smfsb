@@ -22,10 +22,6 @@ To upgrade already installed package:
 pip install --upgrade jsmfsb
 ```
 
-**Note** that a number of breaking syntax changes (more pythonic names) were introduced in version 1.1.0. If you upgrade to a version >= 1.1.0 from a version prior to 1.1.0 you will have to update syntax to the new style.
-
-**Note** that version 1.1.3 fixes a bug in `sim_time_series` (see the release notes for details). Users are encouraged to update to the latest release ASAP.
-
 You can test that your installation is working by entering the following at a python prompt:
 
 ```python
