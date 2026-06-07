@@ -22,8 +22,7 @@ jobs:
 
       - name: Run linter
         run: |
-          uvx -p 3.11 black --check .
-
+          uvx -p 3.12 black --target-version py312 --check .
       - name: Run tests
         run: |
           uv venv
