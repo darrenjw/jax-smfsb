@@ -3,7 +3,6 @@
 
 import jax.numpy as jnp
 
-
 # time, prey, predator
 lv_perfect = jnp.array(
     [
