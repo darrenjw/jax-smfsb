@@ -38,7 +38,7 @@ For an introduction to this library, see the **[jax-smfsb tutorial](https://jax-
 
 ## Converting from the `smfsb` python package
 
-The API for this package is very similar to that of the `smfsb` package. The main difference is that non-deterministic (random) functions have an extra argument (typically the first argument) that corresponds to a JAX random number key. See the [relevant section](https://jax.readthedocs.io/en/latest/random-numbers.html) of the JAX documentation for further information regarding random numbers in JAX code.
+The API for this package is very similar to that of the `smfsb` package. The main difference is that non-deterministic (random) functions have first argument corresponding to a JAX random number key rather than a numpy random number generator. Users are responsible for ensuring that keys are not re-used. See the [relevant section](https://jax.readthedocs.io/en/latest/random-numbers.html) of the JAX documentation for further information regarding random numbers in JAX code.
 
 ## Further information
 
@@ -57,6 +57,6 @@ Wilkinson, D. J. (2025). [jax-smfsb: A Python library for stochastic systems bio
 If you have problems with this software, please start an [Issue](https://github.com/darrenjw/jax-smfsb/issues) or a [Discussion](https://github.com/darrenjw/jax-smfsb/discussions). Pull requests containing bug fixes are welcome.
 
 
-**Copyright (C) 2024-2025 Darren J Wilkinson**
+**Copyright (C) 2024-2026 Darren J Wilkinson**
 
 
