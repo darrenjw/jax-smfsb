@@ -445,9 +445,7 @@ Converting from the ``smfsb`` python package
 --------------------------------------------
 
 The API for this package is very similar to that of the ``smfsb``
-package. The main difference is that non-deterministic (random)
-functions have an extra argument (typically the first argument) that
-corresponds to a JAX random number key. See the `relevant
+package. The main difference is that non-deterministic (random) functions have first argument corresponding to a JAX random number key rather than a numpy random number generator. Users are responsible for ensuring that keys are not re-used. See the `relevant
 section <https://jax.readthedocs.io/en/latest/random-numbers.html>`__ of
 the JAX documentation for further information regarding random numbers
 in JAX code.
