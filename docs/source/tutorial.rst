@@ -39,7 +39,7 @@ you can also plot the results with:
    for i in range(2):
        axis.plot(range(out.shape[0]), out[:,i])
 
-   axis.legend(lvmod.n)
+   axis.legend(lvmod.p)
    fig.savefig("lv.pdf")
 
 Standard python docstring documentation is available. Usage information
@@ -138,7 +138,7 @@ realisation from a discrete stochastic SEIR model.
    for i in range(len(seir.m)):
        axis.plot(jnp.arange(0, 40, 0.05), out[:,i])
 
-   axis.legend(seir.n)
+   axis.legend(seir.p)
    fig.savefig("seir.pdf")
 
 A `collection of appropriate
@@ -177,7 +177,7 @@ For 1d simulation, the state is a matrix with rows representing the levels of a 
    fig, axis = plt.subplots()
    for i in range(2):
        axis.imshow(out[i, :, :])
-       axis.set_title(lv.n[i])
+       axis.set_title(lv.p[i])
        fig.savefig(f"step_gillespie_1d{i}.pdf")
 
 
@@ -207,7 +207,7 @@ For 2d simulation, the state is a 3d array containing the levels of each species
    fig, axis = plt.subplots()
    for i in range(2):
        axis.imshow(x1[i, :, :])
-       axis.set_title(lv.n[i])
+       axis.set_title(lv.p[i])
        fig.savefig(f"step_cle_2df{i}.pdf")
 
 Note that on fine 2d grids, approximate simulation using ``step_cle_2d`` is much typically much faster than exact simulation from the reaction diffusion master equation (RDME) using ``step_gillespie_2d``.
