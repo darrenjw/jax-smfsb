@@ -47,7 +47,7 @@ fig, axis = plt.subplots()
 for i in range(len(seir.m)):
     axis.plot(jnp.arange(0, 50, 0.05), out[:, i])
 
-axis.legend(seir.n)
+axis.legend(seir.p)
 fig.savefig("sbml-params-0.pdf")
 
 # We will update the removal rate, gamma.
@@ -65,7 +65,7 @@ fig, axis = plt.subplots()
 for i in range(len(seir.m)):
     axis.plot(jnp.arange(0, 50, 0.05), out[:, i])
 
-axis.legend(seir.n)
+axis.legend(seir.p)
 fig.savefig("sbml-params-1.pdf")
 
 

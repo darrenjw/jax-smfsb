@@ -18,7 +18,7 @@ fig, axis = plt.subplots()
 for i in range(2):
     axis.plot(range(out.shape[0]), out[:, i])
 
-axis.legend(lvmod.n)
+axis.legend(lvmod.p)
 fig.savefig("m-lv-cle.pdf")
 
 # eof

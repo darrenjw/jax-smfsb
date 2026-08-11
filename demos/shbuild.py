@@ -39,7 +39,7 @@ fig, axis = plt.subplots()
 for i in range(4):
     axis.plot(range(out.shape[0]), out[:, i])
 
-axis.legend(seir.n)
+axis.legend(seir.p)
 fig.savefig("shbuild.pdf")
 
 # sim_sample

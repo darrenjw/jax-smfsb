@@ -19,7 +19,7 @@ x1 = step_lv_2d(k0, x0, 0, T)
 fig, axis = plt.subplots()
 for i in range(2):
     axis.imshow(x1[i, :, :])
-    axis.set_title(lv.n[i])
+    axis.set_title(lv.p[i])
     fig.savefig(f"step_cle_2df{i}.pdf")
 
 

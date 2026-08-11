@@ -21,7 +21,7 @@ out = jsmfsb.sim_time_series_1d(k0, x0, 0, T, 1, step_lv_1d, True)
 fig, axis = plt.subplots()
 for i in range(2):
     axis.imshow(out[i, :, :])
-    axis.set_title(lv.n[i])
+    axis.set_title(lv.p[i])
     fig.savefig(f"step_gillespie_1d{i}.pdf")
 
 

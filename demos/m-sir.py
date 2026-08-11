@@ -18,7 +18,7 @@ fig, axis = plt.subplots()
 for i in range(3):
     axis.plot(range(out.shape[0]), out[:, i])
 
-axis.legend(sirmod.n)
+axis.legend(sirmod.p)
 fig.savefig("m-sir.pdf")
 
 # eof
