@@ -24,6 +24,16 @@ def test_simts2():
     assert out[4, 1] >= 0
 
 
+def test_simtimes():
+    lv = jsmfsb.models.lv()
+    step = lv.step_gillespie()
+    k0 = jax.random.key(42)
+    out = jsmfsb.sim_times(k0, lv.m, 0, jnp.array([0.0, 2, 5, 10]), step)
+    assert out.shape == (4, 2)
+    assert (out[0, :] == lv.m).all()
+    assert out[3, 1] >= 0
+
+
 def test_simsample():
     lv = jsmfsb.models.lv()
     step = lv.step_gillespie()
