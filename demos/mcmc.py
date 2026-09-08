@@ -61,4 +61,32 @@ def mcmc_summary(
     return summ
 
 
+def pairs(mat, file_name="pairs.pdf", labels=False, truth=False, bins=30):
+    n, p = mat.shape
+    summ = sp.stats.describe(mat)
+    fig, axes = plt.subplots(p, p)
+    fig.tight_layout()
+    for row in range(p):
+        for col in range(p):
+            if row == col:
+                h, b, bc = axes[row, col].hist(mat[:, row], bins)
+                if truth:
+                    axes[row, col].vlines(truth[row], 0, np.max(h), "r")
+            else:
+                axes[row, col].scatter(mat[:, col], mat[:, row], marker=".")
+                if truth:
+                    axes[row, col].vlines(
+                        truth[col], summ.minmax[0][row], summ.minmax[1][row], "r"
+                    )
+                    axes[row, col].hlines(
+                        truth[row], summ.minmax[0][col], summ.minmax[1][col], "r"
+                    )
+            if (col == 0) and labels:
+                axes[row, col].set_ylabel(labels[row])
+            if (row == p - 1) and labels:
+                axes[row, col].set_xlabel(labels[col])
+    fig.savefig(file_name, dpi=300, bbox_inches="tight")
+    return fig
+
+
 # eof

@@ -50,7 +50,10 @@ thmat = jsmfsb.metropolis_hastings(
 
 print("MCMC done. Now processing the results...")
 
-mcmc.mcmc_summary(thmat, "pmmh.pdf", labels=["th1", "th2", "th3"])
+mcmc.mcmc_summary(
+    thmat, "pmmh.pdf", labels=["th1", "th2", "th3"], truth=[1, 0.005, 0.6]
+)
+mcmc.pairs(thmat, "pmmh-pp.pdf", labels=["th1", "th2", "th3"], truth=[1, 0.005, 0.6])
 
 print("All finished.")
 
