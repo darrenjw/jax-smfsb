@@ -69,7 +69,7 @@ def pairs(mat, file_name="pairs.pdf", labels=False, truth=False, bins=30):
     for row in range(p):
         for col in range(p):
             if row == col:
-                h, b, bc = axes[row, col].hist(mat[:, row], bins)
+                h, b, bc = axes[row, col].hist(mat[:, row], bins, density=True)
                 if truth:
                     axes[row, col].vlines(truth[row], 0, np.max(h), "r")
             else:
